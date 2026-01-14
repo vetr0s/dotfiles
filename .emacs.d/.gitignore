@@ -8,6 +8,7 @@ custom.el
 recentf.eld
 history
 .last-package-update-day
+places
 
 # Package directories (managed by package.el)
 elpa/

@@ -182,6 +182,11 @@
   (text-mode-ispell-word-completion nil)
   (tab-always-indent 'complete)
 
+  (corfu-auto t)
+  (corfu-auto-delay 0.15)
+  (corfu-auto-prefix 1)
+  (corfu-cycle t)
+
   ;; Enable Corfu
   :config
   (global-corfu-mode))
@@ -551,7 +556,13 @@
   :ensure nil
   :commands (eglot-ensure
              eglot-rename
-             eglot-format-buffer))
+             eglot-format-buffer)
+  :hook
+  (java-mode . eglot-ensure)
+  :config
+  (add-to-list 'eglot-server-programs
+               '(java-mode . ("jdtls")))
+  (setq eglot-autoshutdown t))
 
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
@@ -572,7 +583,9 @@
   ;; (org-fontify-todo-headline t)
   ;; (org-fontify-whole-heading-line t)
   ;; (org-fontify-quote-and-verse-blocks t)
-  (org-startup-truncated t))
+  (org-startup-truncated t)
+  :config
+  (setq org-agenda-files '("~/Documents/Agenda")))
 
 ;; The markdown-mode package provides a major mode for Emacs for syntax
 ;; highlighting, editing commands, and preview support for Markdown documents.
@@ -829,3 +842,9 @@
              elisp-refs-variable
              elisp-refs-special
              elisp-refs-symbol))
+
+;; Trying to make the modeline look pretty and also cut down on the amount of
+;; modes being displayed on the modeline.
+(use-package doom-modeline
+  :ensure t
+  :init (doom-modeline-mode 1))
