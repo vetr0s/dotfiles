@@ -12,7 +12,6 @@
 ;; Display line numbers in programming modes
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 (add-hook 'text-mode-hook #'display-line-numbers-mode)
-(add-hook 'conf-mode-hook #'display-line-numbers-mode)
 
 ;; Highlight the current line
 (add-hook 'prog-mode-hook #'hl-line-mode)
@@ -354,8 +353,8 @@
    consult-theme :preview-key '(:debounce 0.2 any)
    consult-ripgrep consult-git-grep consult-grep
    consult-bookmark consult-recent-file consult-xref
-   consult--source-bookmark consult--source-file-register
-   consult--source-recent-file consult--source-project-recent-file
+   ;; consult--source-bookmark consult--source-file-register
+   ;; consult--source-recent-file consult--source-project-recent-file
    ;; :preview-key "M-."
    :preview-key '(:debounce 0.4 any))
   (setq consult-narrow-key "<"))
@@ -559,9 +558,15 @@
              eglot-format-buffer)
   :hook
   (java-mode . eglot-ensure)
+  (java-ts-mode . eglot-ensure)
+  (ruby-mode . eglot-ensure)
+  (ruby-ts-mode . eglot-ensure)
   :config
-  (add-to-list 'eglot-server-programs
-               '(java-mode . ("jdtls")))
+  (dolist (entry '((java-mode    . ("jdtls"))
+                   (java-ts-mode . ("jdtls"))
+                   (ruby-mode    . ("solargraph" "stdio"))
+                   (ruby-ts-mode . ("solargraph" "stdio"))))
+    (add-to-list 'eglot-server-programs entry))
   (setq eglot-autoshutdown t))
 
 ;; Org mode is a major mode designed for organizing notes, planning, task
@@ -574,16 +579,12 @@
   :commands (org-mode org-version)
   :mode
   ("\\.org\\'" . org-mode)
+  :bind (("C-c a"   . org-agenda))
   :custom
   (org-hide-leading-stars t)
   (org-startup-indented t)
   (org-adapt-indentation nil)
   (org-edit-src-content-indentation 0)
-  ;; (org-fontify-done-headline t)
-  ;; (org-fontify-todo-headline t)
-  ;; (org-fontify-whole-heading-line t)
-  ;; (org-fontify-quote-and-verse-blocks t)
-  (org-startup-truncated t)
   :config
   (setq org-agenda-files '("~/Documents/Agenda")))
 
@@ -720,14 +721,6 @@
 (use-package flyspell
   :ensure nil
   :commands flyspell-mode
-  :hook
-  (; (prog-mode . flyspell-prog-mode)
-   (text-mode . (lambda()
-                  (if (or (derived-mode-p 'yaml-mode)
-                          (derived-mode-p 'yaml-ts-mode)
-                          (derived-mode-p 'ansible-mode))
-                      (flyspell-prog-mode 1)
-                    (flyspell-mode 1)))))
   :config
   ;; Remove strings from Flyspell
   (setq flyspell-prog-text-faces (delq 'font-lock-string-face
@@ -848,3 +841,9 @@
 (use-package doom-modeline
   :ensure t
   :init (doom-modeline-mode 1))
+
+;; Magit is like lazyvim but within emacs so you can do most git/github
+;; actions without having to leave emacs.
+(use-package magit
+  :ensure t
+  :init (magit-define-popup-key "q" magit-quit))
