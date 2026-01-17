@@ -9,6 +9,7 @@ recentf.eld
 history
 .last-package-update-day
 places
+easysession/
 
 # Package directories (managed by package.el)
 elpa/

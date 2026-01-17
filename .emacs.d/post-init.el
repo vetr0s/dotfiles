@@ -1,5 +1,42 @@
 ;;; post-init.el -*- no-byte-compile: t; lexical-binding: t; -*-
 
+;; Native compilation enhances Emacs performance by converting Elisp code into
+;; native machine code, resulting in faster execution and improved
+;; responsiveness.
+;;
+;; Ensure adding the following compile-angel code at the very beginning
+;; of your `~/.emacs.d/post-init.el` file, before all other packages.
+(use-package compile-angel
+  :demand t
+  :ensure t
+  :custom
+  ;; Set `compile-angel-verbose` to nil to suppress output from compile-angel.
+  ;; Drawback: The minibuffer will not display compile-angel's actions.
+  (compile-angel-verbose t)
+
+  :config
+  ;; The following directive prevents compile-angel from compiling your init
+  ;; files. If you choose to remove this push to `compile-angel-excluded-files'
+  ;; and compile your pre/post-init files, ensure you understand the
+  ;; implications and thoroughly test your code. For example, if you're using
+  ;; the `use-package' macro, you'll need to explicitly add:
+  ;; (eval-when-compile (require 'use-package))
+  ;; at the top of your init file.
+  (push "/init.el" compile-angel-excluded-files)
+  (push "/early-init.el" compile-angel-excluded-files)
+  (push "/pre-init.el" compile-angel-excluded-files)
+  (push "/post-init.el" compile-angel-excluded-files)
+  (push "/pre-early-init.el" compile-angel-excluded-files)
+  (push "/post-early-init.el" compile-angel-excluded-files)
+
+  ;; A local mode that compiles .el files whenever the user saves them.
+  (add-hook 'emacs-lisp-mode-hook #'compile-angel-on-save-local-mode)
+
+  ;; A global mode that compiles .el files prior to loading them via `load' or
+  ;; `require'. Additionally, it compiles all packages that were loaded before
+  ;; the mode `compile-angel-on-load-mode' was activated.
+  (compile-angel-on-load-mode 1))
+
 ;; Set the default font to Zenbones Brainy with specific size and weight
 (set-face-attribute 'default nil
                     :height 130 :weight 'normal :family "Zenbones Brainy")
@@ -34,46 +71,6 @@
 
 ;; Remember window configurations (C-c left/right to undo/redo)
 (winner-mode 1)
-
-;; Debug: uncomment to get backtraces for post-init errors
-;; (setq debug-on-error t)
-
-;; Native compilation enhances Emacs performance by converting Elisp code into
-;; native machine code, resulting in faster execution and improved
-;; responsiveness.
-;;
-;; Ensure adding the following compile-angel code at the very beginning
-;; of your `~/.emacs.d/post-init.el` file, before all other packages.
-(use-package compile-angel
-  :demand t
-  :ensure t
-  :custom
-  ;; Set `compile-angel-verbose` to nil to suppress output from compile-angel.
-  ;; Drawback: The minibuffer will not display compile-angel's actions.
-  (compile-angel-verbose t)
-
-  :config
-  ;; The following directive prevents compile-angel from compiling your init
-  ;; files. If you choose to remove this push to `compile-angel-excluded-files'
-  ;; and compile your pre/post-init files, ensure you understand the
-  ;; implications and thoroughly test your code. For example, if you're using
-  ;; the `use-package' macro, you'll need to explicitly add:
-  ;; (eval-when-compile (require 'use-package))
-  ;; at the top of your init file.
-  (push "/init.el" compile-angel-excluded-files)
-  (push "/early-init.el" compile-angel-excluded-files)
-  (push "/pre-init.el" compile-angel-excluded-files)
-  (push "/post-init.el" compile-angel-excluded-files)
-  (push "/pre-early-init.el" compile-angel-excluded-files)
-  (push "/post-early-init.el" compile-angel-excluded-files)
-
-  ;; A local mode that compiles .el files whenever the user saves them.
-  ;; (add-hook 'emacs-lisp-mode-hook #'compile-angel-on-save-local-mode)
-
-  ;; A global mode that compiles .el files prior to loading them via `load' or
-  ;; `require'. Additionally, it compiles all packages that were loaded before
-  ;; the mode `compile-angel-on-load-mode' was activated.
-  (compile-angel-on-load-mode 1))
 
 ;; Auto-revert in Emacs is a feature that automatically updates the
 ;; contents of a buffer to reflect changes made to the underlying file
@@ -586,7 +583,7 @@
   (org-adapt-indentation nil)
   (org-edit-src-content-indentation 0)
   :config
-  (setq org-agenda-files '("~/Documents/Agenda")))
+  (setq org-agenda-files '("~/dev/ua/Agenda")))
 
 ;; The markdown-mode package provides a major mode for Emacs for syntax
 ;; highlighting, editing commands, and preview support for Markdown documents.
@@ -614,18 +611,18 @@
   :custom
   (markdown-toc-header-toc-title "**Table of Contents**"))
 
-;; Tree-sitter in Emacs is an incremental parsing system introduced in Emacs 29
-;; that provides precise, high-performance syntax highlighting. It supports a
-;; broad set of programming languages, including Bash, C, C++, C#, CMake, CSS,
-;; Dockerfile, Go, Java, JavaScript, JSON, Python, Rust, TOML, TypeScript, YAML,
-;; Elisp, Lua, Markdown, and many others.
-(use-package treesit-auto
-  :ensure t
-  :custom
-  (treesit-auto-install 'prompt)
-  :config
-  (treesit-auto-add-to-auto-mode-alist 'all)
-  (global-treesit-auto-mode))
+;; ;; Tree-sitter in Emacs is an incremental parsing system introduced in Emacs 29
+;; ;; that provides precise, high-performance syntax highlighting. It supports a
+;; ;; broad set of programming languages, including Bash, C, C++, C#, CMake, CSS,
+;; ;; Dockerfile, Go, Java, JavaScript, JSON, Python, Rust, TOML, TypeScript, YAML,
+;; ;; Elisp, Lua, Markdown, and many others.
+;; (use-package treesit-auto
+;;   :ensure t
+;;   :custom
+;;   (treesit-auto-install 'prompt)
+;;   :config
+;;   (treesit-auto-add-to-auto-mode-alist 'all)
+;;   (global-treesit-auto-mode))
 
 ;; This automates the process of updating installed packages
 (use-package auto-package-update
@@ -844,6 +841,35 @@
 
 ;; Magit is like lazyvim but within emacs so you can do most git/github
 ;; actions without having to leave emacs.
-(use-package magit
+(use-package magit :ensure t)
+
+;; The easysession Emacs package is a session manager for Emacs that can persist
+;; and restore file editing buffers, indirect buffers/clones, Dired buffers,
+;; windows/splits, the built-in tab-bar (including tabs, their buffers, and
+;; windows), and Emacs frames. It offers a convenient and effortless way to
+;; manage Emacs editing sessions and utilizes built-in Emacs functions to
+;; persist and restore frames.
+(use-package easysession
   :ensure t
-  :init (magit-define-popup-key "q" magit-quit))
+  :commands (easysession-switch-to
+             easysession-save-as
+             easysession-save-mode
+             easysession-load-including-geometry)
+
+  :custom
+  (easysession-mode-line-misc-info t)  ; Display the session in the modeline
+  (easysession-save-interval (* 10 60))  ; Save every 10 minutes
+
+  :init
+  ;; Key mappings:
+  ;; C-c l for switching sessions
+  ;; and C-c s for saving the current session
+  (global-set-key (kbd "C-c l") 'easysession-switch-to)
+  (global-set-key (kbd "C-c s") 'easysession-save-as)
+
+  ;; The depth 102 and 103 have been added to to `add-hook' to ensure that the
+  ;; session is loaded after all other packages. (Using 103/102 is particularly
+  ;; useful for those using minimal-emacs.d, where some optimizations restore
+  ;; `file-name-handler-alist` at depth 101 during `emacs-startup-hook`.)
+  (add-hook 'emacs-startup-hook #'easysession-load-including-geometry 102)
+  (add-hook 'emacs-startup-hook #'easysession-save-mode 103))
