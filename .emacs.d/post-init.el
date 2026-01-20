@@ -798,7 +798,7 @@
   :hook
   (emacs-lisp-mode . highlight-defined-mode))
 
-;; Prevent parenthesis imbalance
+;; Prevent thesis imbalance
 (use-package paredit
   :ensure t
   :commands paredit-mode
@@ -839,6 +839,8 @@
   :ensure t
   :init (doom-modeline-mode 1))
 
+;; Magit Dependency: transient
+(use-package transient :ensure t)
 ;; Magit is like lazyvim but within emacs so you can do most git/github
 ;; actions without having to leave emacs.
 (use-package magit :ensure t)
