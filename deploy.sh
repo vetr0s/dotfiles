@@ -57,7 +57,7 @@ echo ""
 
 create_symlink "$DOTFILES_DIR/.emacs.d" "$HOME/.emacs.d" "emacs"
 create_symlink "$DOTFILES_DIR/.vimrc" "$HOME/.vimrc" "vim"
-create_symlink "$DOTFILES_DIR/tmux/tmux.conf" "$HOME/.tmux.conf" "tmux"
+create_symlink "$DOTFILES_DIR/.tmux.conf" "$HOME/.tmux.conf" "tmux"
 create_symlink "$DOTFILES_DIR/alacritty" "$HOME/.config/alacritty" "alacritty"
 
 echo ""
