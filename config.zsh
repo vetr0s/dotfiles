@@ -2,7 +2,6 @@ alias docker="sudo docker"
 alias emacs="emacsclient -c &disown"
 alias emacs-status='emacsclient -e "(emacs-version)"'
 alias emacs-kill='emacsclient -e "(kill-emacs)"'
-alias open="xdg-open"
 alias xbps-remove="sudo xbps-remove -Oo"
 alias xbps-install="sudo xbps-install -Su"
 alias xbps-query="xbps-query -Rs"
@@ -25,3 +24,5 @@ emacsctl() {
       echo "Usage: emacsctl {start|stop|restart|status}" ;;
   esac
 }
+
+export PATH="$HOME/.ghcup/bin:$PATH"

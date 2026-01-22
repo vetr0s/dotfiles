@@ -72,6 +72,12 @@
 ;; Remember window configurations (C-c left/right to undo/redo)
 (winner-mode 1)
 
+;; Make sure GUI Emacs gets PATH (macOS)
+(use-package exec-path-from-shell
+  :ensure t
+  :config
+  (exec-path-from-shell-initialize))
+
 ;; Auto-revert in Emacs is a feature that automatically updates the
 ;; contents of a buffer to reflect changes made to the underlying file
 ;; on disk.
@@ -558,13 +564,32 @@
   (java-ts-mode . eglot-ensure)
   (ruby-mode . eglot-ensure)
   (ruby-ts-mode . eglot-ensure)
+  (haskell-mode . eglot-ensure)
+  (haskell-literate-mode . eglot-ensure)
   :config
   (dolist (entry '((java-mode    . ("jdtls"))
                    (java-ts-mode . ("jdtls"))
                    (ruby-mode    . ("solargraph" "stdio"))
-                   (ruby-ts-mode . ("solargraph" "stdio"))))
+                   (ruby-ts-mode . ("solargraph" "stdio"))
+                   (haskell-mode . ("haskell-language-server-wrapper" "--lsp"))
+                   (haskell-literate-mode . ("haskell-language-server-wrapper" "--lsp"))))
     (add-to-list 'eglot-server-programs entry))
   (setq eglot-autoshutdown t))
+
+;; Haskell Support
+(use-package haskell-mode
+  :ensure t)
+
+;; Ormolu auto-formatting (optional)
+(use-package ormolu
+  :ensure t
+  :hook (haskell-mode . ormolu-format-on-save-mode))
+
+;; Python venv support
+(use-package pyvenv
+  :ensure t
+  :config
+  (pyvenv-mode 1))
 
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
@@ -583,7 +608,11 @@
   (org-adapt-indentation nil)
   (org-edit-src-content-indentation 0)
   :config
-  (setq org-agenda-files '("~/dev/ua/Agenda")))
+  (setq org-agenda-files '("~/dev/ua/Agenda"))
+  (setq org-todo-keywords '((sequence "TODO" "IN-PROGRESS" "WAITING" "DONE")))
+  (setq org-todo-keyword-faces
+        '(("TODO" . (:foreground "red" :weight bold)) ("IN-PROGRESS" . (:foreground "yellow" :weight bold))
+          ("WAITING" . (:foreground "blue" :weight bold)) ("DONE" . (:foreground "green" :weight bold)))))
 
 ;; The markdown-mode package provides a major mode for Emacs for syntax
 ;; highlighting, editing commands, and preview support for Markdown documents.
