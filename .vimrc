@@ -11,9 +11,6 @@ set nocompatible
 set relativenumber
 set number
 
-" Clipboard
-set clipboard=unnamedplus
-
 " Tabstop bullsplish
 set tabstop=4
 set softtabstop=4
@@ -37,11 +34,13 @@ set textwidth=79
 set colorcolumn=+1
 
 " FINDING FILES:
+
 " Search down into every subdirectory, tab-completion
 set path+=**
 set wildmenu
 
 " NETRW:
+
 " Tweaks
 let g:netrw_banner=0
 let g:netrw_browse_split=2
@@ -49,21 +48,26 @@ let g:netrw_altv=1
 let g:netrw_liststyle=3
 
 " BASIC REMAPS:
+
 nnoremap <C-x><C-s> :so %<cr>
-nnoremap <C-c><C-i> :PlugInstall<cr>
-nnoremap <C-c><C-c> :PlugClean<cr>
-nnoremap <C-c>e :Ex<cr>
+nnoremap <C-c><C-p>i :PlugInstall<cr>
+nnoremap <C-c><C-p>c :PlugClean<cr>
+nnoremap <C-c><C-e> :Ex<cr>
 
 " FZF
-nnoremap <C-s>l :BLines<cr>
-nnoremap <C-s>b :Buffers<cr>
-nnoremap <C-s>f :Files<cr>
-nnoremap <C-s>k :Maps<cr>
+nnoremap <C-x>l :BLines<cr>
+nnoremap <C-x>b :Buffers<cr>
+nnoremap <C-x>f :Files<cr>
+nnoremap <C-x>m :Maps<cr>
 
 " Undotree
 nnoremap <C-c><C-u> :UndotreeToggle<cr>
 
+" Buffer MGMT
+nnoremap <C-x>k :bdelete<cr>
+
 " PLUGINS:
+
 call plug#begin()
 
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
