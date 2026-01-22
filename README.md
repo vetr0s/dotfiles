@@ -2,47 +2,31 @@
 
 The purpose of this repository is to store all configuration of any essential developer tools that I use.
 
-## Using this repo
+## Usage
 
-1. Clone the repo into your home directory
+The `deploy.sh` script essentially symlinks `.vimrc`, `.emacs.d/`, `.tmux.conf`, & `alacritty/` to their respective
+locations where they are exposed to the program itself. If the directory does not exist, for instance
+if you do not have alacritty or tmux installed. Currently, the `deploy.sh` script does not create these
+directories for you so either they will be created automatically in your `$HOME/.config/` directory or
+you can create them yourself.
 
-```bash
-cd ~/
-git clone https://github.com/nathantebbs/dotfiles.git
+For example, from within the dotfiles directory:
+
+```sh
+mkdir -p $HOME/.config/tmux
+./deploy.sh
 ```
 
-2. Symlink
+Then the script will symlink the tmux configuration file to that location.
 
-```bash
-ln -s ~/dotfiles/.emacs ~/.emacs
+### Vim
+
+Currently, for simple plugins, my `.vimrc` uses [vim-plug](https://github.com/junegunn/vim-plug). To make installing vim-plug
+easier on a new machine, consider using the `install-vimplug.sh` script, which just runs the curl command found on the vim-plug
+repository. Once installed from within vim:
+
+```txt
+:PlugInstall
 ```
 
-> [!NOTE]
-> before symlinking files ensure that you have backed up any existing configurations already
-> present. For specific configuration(s) see below.
-
-## Emacs
-
-- Any file specific bindings (**especially org-mode**) heavily rely on file structure.
-if you receive any errors on startup, read the .emacs file to see if you are missing any dependencies or
-file structure requirements. If the issue is related to org-mode I suggest changing the files org-mode relies
-on.
-
-> [!NOTE]
-> By default, my configuration expects ~/org to exist. I usually clone a backup of my private org repository.
-> Alternatively, you could remove this dependency within the .emacs file.
-
-### MacOS
-
-- I regularly switch between my MacBook Pro and Linux desktop. When using emacs on MacOS I highly recommend using [emacs-plus@31](https://github.com/d12frosted/homebrew-emacs-plus).
-This installs a lot of usefull prerequisites and gives the user tons of install options. I have only experienced errors with my configuration when using emacs-app.
-
-### Usage
-
-Backup/Remove old emacs configuration file(s)
-
-```bash
-mv ~/.config/emacs ~/.config/emacs.back
-mv ~/.config/doom ~/.config/doom.back
-mv ~/.emacs.d ~/.emacs.d.back
-```
+To install all the plugins listed in the `.vimrc` file.
