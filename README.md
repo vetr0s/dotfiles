@@ -4,7 +4,14 @@ The purpose of this repository is to store all configuration of any essential de
 
 ## Usage
 
-The `deploy.sh` script essentially symlinks `.vimrc`, `.emacs.d/`, `.tmux.conf`, & `alacritty/` to their respective
+### Installation
+
+1. Clone the GitHub repository to where ever you like
+2. Run the helper `deploy.sh` & `install-vimplug.sh` scripts
+
+### deploy.sh
+
+This script essentially symlinks `.vimrc`, `.emacs.d/`, `.tmux.conf`, & `alacritty/` to their respective
 locations where they are exposed to the program itself. If the directory does not exist, for instance
 if you do not have alacritty or tmux installed. Currently, the `deploy.sh` script does not create these
 directories for you so either they will be created automatically in your `$HOME/.config/` directory or
