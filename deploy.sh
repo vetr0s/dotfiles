@@ -35,7 +35,7 @@ create_symlink() {
     if [ -e "$target" ] || [ -L "$target" ]; then
         # If it's already a symlink pointing to the right place
         if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
-            echo -e "${GREEN}[OK]${NC} $name already linked correctly"
+            echo "${GREEN}[OK]${NC} $name already linked correctly"
             return 0
         fi
 

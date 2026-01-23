@@ -43,7 +43,7 @@
 
 ;; Theme
 (mapc #'disable-theme custom-enabled-themes)  ; Disable all active themes
-(load-theme 'modus-vivendi-tinted t)  ; Load the built-in theme
+(load-theme 'modus-vivendi-deuteranopia t)  ; Load the built-in theme
 
 ;; Basic UI Improvements
 ;; Display line numbers in programming modes
