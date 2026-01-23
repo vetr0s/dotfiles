@@ -7,6 +7,11 @@ The purpose of this repository is to store all configuration of any essential de
 ### Installation
 
 1. Clone the GitHub repository to where ever you like
+
+```sh
+git clone --depth=1 https://github.com/nathantebbs/dotfiles
+```
+
 2. Run the helper `deploy.sh` & `install-vimplug.sh` scripts
 
 ### deploy.sh
