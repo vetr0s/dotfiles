@@ -1,4 +1,5 @@
-general.import = ["~/.config/alacritty/themes/gotham.toml"]
+[general]
+import = ["~/.config/alacritty/themes/modus-vivendi-deuteranopia.toml"]
 
 [env]
 TERM = "xterm-256color"

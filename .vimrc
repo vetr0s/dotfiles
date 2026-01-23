@@ -1,11 +1,12 @@
 " Author: Nathan Tebbs
 " File: .vimrc
-" Modified: 2026-01-22
+" Modified: 2026-01-23
 
 " BASICS:
 
 " Force vim not vi
 set nocompatible
+set clipboard=unnamedplus
 
 " Relative number
 set relativenumber
@@ -49,7 +50,6 @@ let g:netrw_liststyle=3
 
 " BASIC REMAPS:
 
-nnoremap <C-x><C-s> :so %<cr>
 nnoremap <C-c><C-p>i :PlugInstall<cr>
 nnoremap <C-c><C-p>c :PlugClean<cr>
 nnoremap <C-c><C-e> :Ex<cr>
@@ -79,12 +79,13 @@ Plug 'sheerun/vim-polyglot'
 Plug 'sakshamgupta05/vim-todo-highlight'
 Plug 'mbbill/undotree'
 Plug 'whatyouhide/vim-gotham'
+Plug 'c9rgreen/vim-colors-modus'
 
 call plug#end()
 
 " Set colorscheme
 set background=dark
-colorscheme gotham
+colorscheme modus
 
 " Enable lightline
 set laststatus=2
