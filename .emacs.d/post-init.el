@@ -65,6 +65,9 @@
 ;; Show matching parentheses
 (show-paren-mode 1)
 
+;; Other Keybindings
+(global-set-key (kbd "C-c c") #'compile)
+
 ;; Better scrolling behavior
 (setq mouse-wheel-scroll-amount '(2 ((shift) . 1)))
 (setq mouse-wheel-progressive-speed nil)
@@ -553,28 +556,32 @@
     (comment-or-uncomment-region beg end))
   (evil-define-key 'normal 'global (kbd "gc") 'my-evil-comment-or-uncomment))
 
+
+;; ---------------------------------------------------------------------------
+;; LSP (disabled)
+;; ---------------------------------------------------------------------------
 ;; Set up the Language Server Protocol (LSP) servers using Eglot.
-(use-package eglot
-  :ensure nil
-  :commands (eglot-ensure
-             eglot-rename
-             eglot-format-buffer)
-  :hook
-  (java-mode . eglot-ensure)
-  (java-ts-mode . eglot-ensure)
-  (ruby-mode . eglot-ensure)
-  (ruby-ts-mode . eglot-ensure)
-  (haskell-mode . eglot-ensure)
-  (haskell-literate-mode . eglot-ensure)
-  :config
-  (dolist (entry '((java-mode    . ("jdtls"))
-                   (java-ts-mode . ("jdtls"))
-                   (ruby-mode    . ("solargraph" "stdio"))
-                   (ruby-ts-mode . ("solargraph" "stdio"))
-                   (haskell-mode . ("haskell-language-server-wrapper" "--lsp"))
-                   (haskell-literate-mode . ("haskell-language-server-wrapper" "--lsp"))))
-    (add-to-list 'eglot-server-programs entry))
-  (setq eglot-autoshutdown t))
+;; (use-package eglot
+;;   :ensure nil
+;;   :commands (eglot-ensure
+;;              eglot-rename
+;;              eglot-format-buffer)
+;;   :hook
+;;   (java-mode . eglot-ensure)
+;;   (java-ts-mode . eglot-ensure)
+;;   (ruby-mode . eglot-ensure)
+;;   (ruby-ts-mode . eglot-ensure)
+;;   (haskell-mode . eglot-ensure)
+;;   (haskell-literate-mode . eglot-ensure)
+;;   :config
+;;   (dolist (entry '((java-mode    . ("jdtls"))
+;;                    (java-ts-mode . ("jdtls"))
+;;                    (ruby-mode    . ("solargraph" "stdio"))
+;;                    (ruby-ts-mode . ("solargraph" "stdio"))
+;;                    (haskell-mode . ("haskell-language-server-wrapper" "--lsp"))
+;;                    (haskell-literate-mode . ("haskell-language-server-wrapper" "--lsp"))))
+;;     (add-to-list 'eglot-server-programs entry))
+;;   (setq eglot-autoshutdown t))
 
 ;; Haskell Support
 (use-package haskell-mode
