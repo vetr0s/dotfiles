@@ -17,19 +17,7 @@ git clone --depth=1 https://github.com/nathantebbs/dotfiles
 ### deploy.sh
 
 This script essentially symlinks `.vimrc`, `.emacs.d/`, `.tmux.conf`, & `alacritty/` to their respective
-locations where they are exposed to the program itself. If the directory does not exist, for instance
-if you do not have alacritty or tmux installed. Currently, the `deploy.sh` script does not create these
-directories for you so either they will be created automatically in your `$HOME/.config/` directory or
-you can create them yourself.
-
-For example, from within the dotfiles directory:
-
-```sh
-mkdir -p $HOME/.config/tmux
-./deploy.sh
-```
-
-Then the script will symlink the tmux configuration file to that location.
+locations where they are exposed to the program itself.
 
 ### Vim
 
@@ -42,3 +30,9 @@ repository. Once installed from within vim:
 ```
 
 To install all the plugins listed in the `.vimrc` file.
+
+## zsh
+
+I use zsh, and [oh-my-zsh](https://ohmyz.sh/) for theme and plugins. To automate the process I created the `install-omz.sh` script,
+which runs the installer command without taking over the terminal & sources the user configuration file `config.zsh` at the end
+of `~/.zshrc`.
