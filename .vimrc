@@ -1,12 +1,15 @@
 " Author: Nathan Tebbs
 " File: .vimrc
-" Modified: 2026-01-23
+" Modified: 2026-01-24
 
 " BASICS:
 
 " Force vim not vi
 set nocompatible
 set clipboard=unnamedplus
+
+" Color
+set termguicolors
 
 " Relative number
 set relativenumber
@@ -74,7 +77,6 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'tpope/vim-surround'
 Plug 'itchyny/lightline.vim'
-Plug 'jiangmiao/auto-pairs'
 Plug 'sheerun/vim-polyglot'
 Plug 'sakshamgupta05/vim-todo-highlight'
 Plug 'mbbill/undotree'

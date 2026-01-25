@@ -1,13 +1,4 @@
-#!/bin/sh
-
-##############################################################################
-#          File: deploy.sh
-#        Author: Nathan Tebbs
-#       Updated: 2026-01-22
-#   Description: Setup symlinks for emacs, vim, tmux, and alacritty 
-#                configurations.
-##############################################################################
-
+#!/usr/bin/env bash
 
 set -e
 
@@ -27,7 +18,7 @@ create_symlink() {
 
     # Check if source exists
     if [ ! -e "$source" ]; then
-        echo "${RED}[ERROR]${NC} Source not found: $source"
+        echo -e "${RED}[ERROR]${NC} Source not found: $source"
         return 1
     fi
 
@@ -35,19 +26,19 @@ create_symlink() {
     if [ -e "$target" ] || [ -L "$target" ]; then
         # If it's already a symlink pointing to the right place
         if [ -L "$target" ] && [ "$(readlink "$target")" = "$source" ]; then
-            echo "${GREEN}[OK]${NC} $name already linked correctly"
+            echo -e "${GREEN}[OK]${NC} $name already linked correctly"
             return 0
         fi
 
         # Otherwise, backup the existing file/directory
         backup="${target}.backup.$(date +%Y%m%d_%H%M%S)"
-        echo "${YELLOW}[INFO]${NC} Backing up existing $name to $backup"
+        echo -e "${YELLOW}[INFO]${NC} Backing up existing $name to $backup"
         mv "$target" "$backup"
     fi
 
     # Create the symlink
     ln -s "$source" "$target"
-    echo "${GREEN}[OK]${NC} Linked $name"
+    echo -e "${GREEN}[OK]${NC} Linked $name"
 }
 
 echo "Setting up dotfiles symlinks..."
@@ -57,8 +48,12 @@ echo ""
 
 create_symlink "$DOTFILES_DIR/.emacs.d" "$HOME/.emacs.d" "emacs"
 create_symlink "$DOTFILES_DIR/.vimrc" "$HOME/.vimrc" "vim"
-create_symlink "$DOTFILES_DIR/.tmux.conf" "$HOME/.config/tmux/tmux.conf" "tmux"
-create_symlink "$DOTFILES_DIR/alacritty" "$HOME/.config/alacritty" "alacritty"
+create_symlink "$DOTFILES_DIR/tmux" "$HOME/.config/tmux" "tmux"
+create_symlink "$DOTFILES_DIR/nvim" "$HOME/.config/nvim" "nvim"
+create_symlink "$DOTFILES_DIR/kitty" "$HOME/.config/kitty" "kitty"
+create_symlink "$DOTFILES_DIR/waybar" "$HOME/.config/waybar" "waybar"
+create_symlink "$DOTFILES_DIR/rofi" "$HOME/.config/rofi" "rofi"
+create_symlink "$DOTFILES_DIR/hypr" "$HOME/.config/hypr" "hyprland"
 
 echo ""
-echo "${GREEN}[OK]${NC} Symlink deployment complete!"
+echo -e "${GREEN}[OK]${NC} Symlink deployment complete!"

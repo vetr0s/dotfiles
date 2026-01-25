@@ -46,6 +46,10 @@
 (load-theme 'modus-vivendi-deuteranopia t)  ; Load the built-in theme
 
 ;; Basic UI Improvements
+
+;; Transparency
+(set-frame-parameter nil 'alpha-background 92) ;; For Emacs 29+
+
 ;; Display line numbers in programming modes
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
 (add-hook 'text-mode-hook #'display-line-numbers-mode)
@@ -904,6 +908,7 @@
   ;; and C-c s for saving the current session
   (global-set-key (kbd "C-c l") 'easysession-switch-to)
   (global-set-key (kbd "C-c s") 'easysession-save-as)
+  (global-set-key (kbd "C-c r") 'easysession-reset)
 
   ;; The depth 102 and 103 have been added to to `add-hook' to ensure that the
   ;; session is loaded after all other packages. (Using 103/102 is particularly

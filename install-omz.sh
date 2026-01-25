@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 set -xe
 
 command -v zsh >/dev/null 2>&1 || { echo "zsh not installed"; exit 1; }
