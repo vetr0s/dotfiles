@@ -1,6 +1,8 @@
 # TODO
 
-- [X] Fix `deploy.sh` colors
+- [ ] Fix `deploy.sh` colors
+    - [ ] Add OS Specific Customizations (e.g. MacOS doesn't need hypr/ dir
+        symlinked)
 - [ ] Alacritty -> Kitty
 - [ ] i3 -> Hyprland
 - [ ] Automate font installation (Zenbones Brainy)
