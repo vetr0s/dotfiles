@@ -24,6 +24,11 @@ emacsctl() {
   esac
 }
 
-export EDITOR=/usr/bin/nvim
+# OS Specific customizations
+case "$OSTYPE" in
+  darwin*) EDITOR=/opt/homebrew/bin/nvim ;;
+  linux*) EDITOR=/usr/bin/nvim ;;
+esac
+
 export PATH="$HOME/.ghcup/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
