@@ -24,5 +24,6 @@ emacsctl() {
   esac
 }
 
-export PATH="$HOME/.ghcup/bin:$PATH"
 export EDITOR=/usr/bin/nvim
+export PATH="$HOME/.ghcup/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
