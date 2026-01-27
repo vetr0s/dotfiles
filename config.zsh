@@ -25,3 +25,4 @@ emacsctl() {
 }
 
 export PATH="$HOME/.ghcup/bin:$PATH"
+export EDITOR=/usr/bin/nvim
