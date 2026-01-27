@@ -50,11 +50,11 @@ map("n", "<C-c><C-p>i", "<cmd>Lazy sync<cr>", { desc = "Plugins: install/update"
 map("n", "<C-c><C-p>c", "<cmd>Lazy clean<cr>", { desc = "Plugins: clean" })
 map("n", "<C-c><C-e>", "<cmd>Ex<cr>", { desc = "netrw" })
 
--- FZF (provided by fzf.vim)
-map("n", "<C-x>l", "<cmd>BLines<cr>")
-map("n", "<C-x>b", "<cmd>Buffers<cr>")
-map("n", "<C-x>f", "<cmd>Files<cr>")
-map("n", "<C-x>m", "<cmd>Maps<cr>")
+-- Telescope
+map("n", "<C-x>l", ":Telescope live_grep<cr>")
+map("n", "<C-x>b", ":Telescope buffers<cr>")
+map("n", "<C-x>f", ":Telescope find_files<cr>")
+map("n", "<C-x>m", ":Telescope keymaps<cr>")
 
 -- Undotree
 map("n", "<C-c><C-u>", "<cmd>UndotreeToggle<cr>")
@@ -79,24 +79,41 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-  -- FZF
-  { "junegunn/fzf", build = function() vim.fn["fzf#install"]() end },
-  { "junegunn/fzf.vim" },
+    {
+      'nvim-telescope/telescope.nvim', version = '*',
+      dependencies = {
+        'nvim-lua/plenary.nvim',
+        -- optional but recommended
+        { 'nvim-telescope/telescope-fzf-native.nvim', build = 'make' },
+      }
+    },
 
-  -- Your Vim plugins
-  { "tpope/vim-surround" },
-  { "itchyny/lightline.vim" },
+    { "tpope/vim-surround" },
+    { "itchyny/lightline.vim" },
 
-  { "windwp/nvim-autopairs" },
+    { "windwp/nvim-autopairs" },
 
-  { "sheerun/vim-polyglot" },
-  { "sakshamgupta05/vim-todo-highlight" },
-  { "mbbill/undotree" },
+    { "sheerun/vim-polyglot" },
 
-  -- Colors
-  { "whatyouhide/vim-gotham" },
-  { "c9rgreen/vim-colors-modus" },
-})
+    {
+      "folke/todo-comments.nvim",
+      dependencies = { "nvim-lua/plenary.nvim" },
+      opts = {
+        -- your configuration comes here
+        -- or leave it empty to use the default settings
+        -- refer to the configuration section below
+      }
+    },
+
+    { "mbbill/undotree" },
+
+    -- Colors
+    { "c9rgreen/vim-colors-modus" },
+
+    -- Language Support
+    -- TODO: 
+    { "kaarmu/typst.vim", ft = 'typst', lazy=false },
+  })
 
 -- =====================
 -- UI / Theme
