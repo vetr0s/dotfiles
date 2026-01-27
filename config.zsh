@@ -4,6 +4,7 @@ alias emacs-status='emacsclient -e "(emacs-version)"'
 alias emacs-kill='emacsclient -e "(kill-emacs)"'
 alias reboot="sudo shutdown -r now"
 alias vim="nvim"
+alias keys="alias | fzf"
 
 emacsctl() {
   case "$1" in
