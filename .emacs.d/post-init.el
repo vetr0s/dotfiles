@@ -42,8 +42,8 @@
                     :height 130 :weight 'normal :family "Zenbones Brainy")
 
 ;; Theme
-(mapc #'disable-theme custom-enabled-themes)  ; Disable all active themes
-(load-theme 'modus-vivendi-deuteranopia t)  ; Load the built-in theme
+(mapc #'disable-theme custom-enabled-themes)
+(load-theme 'modus-vivendi-deuteranopia t)
 
 ;; Basic UI Improvements
 
