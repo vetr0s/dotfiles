@@ -602,6 +602,10 @@
   :config
   (pyvenv-mode 1))
 
+;; Zig Support
+(use-package zig-mode
+  :ensure t)
+
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
 ;; expressive markup syntax. It supports hierarchical outlines, TODO lists,
@@ -624,6 +628,10 @@
   (setq org-todo-keyword-faces
         '(("TODO" . (:foreground "red" :weight bold)) ("IN-PROGRESS" . (:foreground "yellow" :weight bold))
           ("WAITING" . (:foreground "blue" :weight bold)) ("DONE" . (:foreground "green" :weight bold)))))
+
+;; PDF Stuff
+(use-package pdf-tools
+  :ensure t)
 
 ;; The markdown-mode package provides a major mode for Emacs for syntax
 ;; highlighting, editing commands, and preview support for Markdown documents.
