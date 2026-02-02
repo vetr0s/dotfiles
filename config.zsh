@@ -5,6 +5,7 @@ alias emacs-kill='emacsclient -e "(kill-emacs)"'
 alias reboot="sudo shutdown -r now"
 alias vim="nvim"
 alias keys="alias | fzf"
+alias spotify="flatpak run com.spotify.Client"
 
 emacsctl() {
   case "$1" in
