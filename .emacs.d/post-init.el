@@ -606,6 +606,16 @@
 (use-package zig-mode
   :ensure t)
 
+;; Odin Support
+(use-package odin-mode
+  :ensure (odin-mode
+           :host github
+           :repo "mattt-b/odin-mode")
+  :bind (:map odin-mode-map
+              ("C-c C-r" . 'odin-run-project)
+              ("C-c C-c" . 'odin-build-project)
+              ("C-c C-t" . 'odin-test-project)))
+
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
 ;; expressive markup syntax. It supports hierarchical outlines, TODO lists,
