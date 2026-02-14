@@ -80,14 +80,10 @@ Plug 'itchyny/lightline.vim'
 Plug 'sheerun/vim-polyglot'
 Plug 'sakshamgupta05/vim-todo-highlight'
 Plug 'mbbill/undotree'
-Plug 'whatyouhide/vim-gotham'
-Plug 'c9rgreen/vim-colors-modus'
 
 call plug#end()
 
-" Set colorscheme
-set background=dark
-colorscheme modus
+colorscheme industry
 
 " Enable lightline
 set laststatus=2
