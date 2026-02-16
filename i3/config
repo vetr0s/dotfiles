@@ -19,7 +19,7 @@ font pango:Noto Sans 8
 # gaps outer 10
 
 # Terminal
-bindsym $mod+Return exec alacritty
+bindsym $mod+Return exec kitty
 # Launcher
 bindsym $mod+space exec dmenu_run
 # Browser
