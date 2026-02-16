@@ -934,3 +934,24 @@
   ;; `file-name-handler-alist` at depth 101 during `emacs-startup-hook`.)
   (add-hook 'emacs-startup-hook #'easysession-load-including-geometry 102)
   (add-hook 'emacs-startup-hook #'easysession-save-mode 103))
+
+;; Reveal.js slide export for Org
+(use-package ox-reveal
+  :ensure t
+  :after org
+  :commands (org-reveal-export-to-html org-reveal-export-as-html)
+  :init
+  ;; Pick ONE of these:
+
+  ;; ;; Option A: Local reveal.js (recommended)
+  ;; ;; 1) git clone https://github.com/hakimel/reveal.js ~/.emacs.d/reveal.js
+  ;; ;; 2) set the path:
+  ;; (setq org-reveal-root (concat "file://" (expand-file-name "~/.emacs.d/reveal.js")))
+
+  ;; Option B: CDN (easy, but depends on network)
+  (setq org-reveal-root "https://cdn.jsdelivr.net/npm/reveal.js")
+
+  :config
+  ;; Handy keybinds
+  (global-set-key (kbd "C-c e r") #'org-reveal-export-to-html)
+  (global-set-key (kbd "C-c e R") #'org-reveal-export-as-html))

@@ -105,6 +105,15 @@ require("lazy").setup({
       }
     },
 
+    -- Presenter
+    {
+      "sotte/presenting.nvim",
+      opts = {
+        -- fill in your options here
+        -- see :help Presenting.config
+      },
+      cmd = { "Presenting" },
+    },
     { "mbbill/undotree" },
 
     -- Colors
