@@ -1,5 +1,7 @@
 # TODO
 
+- [ ] Fix Scripts: less clutter in root + need OS specific option selection
+
 - [ ] Fix `deploy.sh` colors
     - [ ] Add OS Specific Customizations (e.g. MacOS doesn't need hypr/ dir
         symlinked)
