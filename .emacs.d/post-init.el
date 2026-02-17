@@ -51,7 +51,7 @@
 ;; Basic UI Improvements
 
 ;; Transparency
-(set-frame-parameter nil 'alpha-background 92) ;; For Emacs 29+
+;; (set-frame-parameter nil 'alpha-background 92) ;; For Emacs 29+
 
 ;; Display line numbers in programming modes
 (add-hook 'prog-mode-hook #'display-line-numbers-mode)
@@ -1026,27 +1026,21 @@
   (global-set-key (kbd "C-c e r") #'org-reveal-export-to-html)
   (global-set-key (kbd "C-c e R") #'org-reveal-export-as-html))
 
-;; EMAIL: Mu4e
-(use-package mu4e
-  :ensure nil
-  :config
-  (setq mu4e-maildir "~/.mail/gmail")
 
-  ;; Sync mail
-  (setq mu4e-get-mail-command "mbsync gmail"
-        mu4e-update-interval 300)
-
-  ;; Identity
-  (setq user-mail-address "vetr0s.dev@gmail.com"
-        user-full-name "Nathan Tebbs")
-
-  ;; Sent/Drafts/Trash folders (Gmail format)
-  (setq mu4e-sent-folder   "/[Gmail]/Sent Mail"
-        mu4e-drafts-folder "/[Gmail]/Drafts"
-        mu4e-trash-folder  "/[Gmail]/Trash")
-
-  ;; SMTP (sending mail)
-  (setq message-send-mail-function 'smtpmail-send-it
-        smtpmail-smtp-server "smtp.gmail.com"
-        smtpmail-smtp-service 587
-        smtpmail-stream-type 'starttls))
+;; EMAIL: mu4e (optional)
+(when (locate-library "mu4e")
+  (use-package mu4e
+    :ensure nil
+    :config
+    (setq mu4e-maildir "~/.mail/gmail")
+    (setq mu4e-get-mail-command "mbsync gmail"
+          mu4e-update-interval 300)
+    (setq user-mail-address "vetr0s.dev@gmail.com"
+          user-full-name "Nathan Tebbs")
+    (setq mu4e-sent-folder   "/[Gmail]/Sent Mail"
+          mu4e-drafts-folder "/[Gmail]/Drafts"
+          mu4e-trash-folder  "/[Gmail]/Trash")
+    (setq message-send-mail-function 'smtpmail-send-it
+          smtpmail-smtp-server "smtp.gmail.com"
+          smtpmail-smtp-service 587
+          smtpmail-stream-type 'starttls)))
