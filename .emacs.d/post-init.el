@@ -42,8 +42,11 @@
                     :height 130 :weight 'normal :family "Zenbones Brainy")
 
 ;; Theme
-(mapc #'disable-theme custom-enabled-themes)
-(load-theme 'modus-vivendi-deuteranopia t)
+(use-package gruber-darker-theme
+  :ensure t
+  :config
+  (mapc #'disable-theme custom-enabled-themes)
+  (load-theme 'gruber-darker t))
 
 ;; Basic UI Improvements
 
@@ -154,6 +157,15 @@
   :custom
   (save-place-limit 400))
 
+(use-package dired
+  :ensure nil
+  :commands dired
+  :config
+  (require 'dired-x)
+  (setq dired-omit-files (concat dired-omit-files "\\|^\\..+$"))
+  (setq-default dired-dwim-target t)
+  (setq dired-listing-switches "-alh"))
+
 ;; Enable `auto-save-mode' to prevent data loss. Use `recover-file' or
 ;; `recover-session' to restore unsaved changes.
 (setq auto-save-default t)
@@ -214,160 +226,185 @@
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-elisp-block))
 
-;; Vertico provides a vertical completion interface, making it easier to
-;; navigate and select from completion candidates (e.g., when `M-x` is pressed).
-(use-package vertico
-  ;; (Note: It is recommended to also enable the savehist package.)
-  :ensure t
-  :config
-  (vertico-mode))
+;; ;; Vertico provides a vertical completion interface, making it easier to
+;; ;; navigate and select from completion candidates (e.g., when `M-x` is pressed).
+;; (use-package vertico
+;;   ;; (Note: It is recommended to also enable the savehist package.)
+;;   :ensure t
+;;   :config
+;;   (vertico-mode))
 
-;; Vertico leverages Orderless' flexible matching capabilities, allowing users
-;; to input multiple patterns separated by spaces, which Orderless then
-;; matches in any order against the candidates.
-(use-package orderless
+;; ;; Vertico leverages Orderless' flexible matching capabilities, allowing users
+;; ;; to input multiple patterns separated by spaces, which Orderless then
+;; ;; matches in any order against the candidates.
+;; (use-package orderless
+;;   :ensure t
+;;   :custom
+;;   (completion-styles '(orderless basic))
+;;   (completion-category-defaults nil)
+;;   (completion-category-overrides '((file (styles partial-completion)))))
+
+;; ;; Marginalia allows Embark to offer you preconfigured actions in more contexts.
+;; ;; In addition to that, Marginalia also enhances Vertico by adding rich
+;; ;; annotations to the completion candidates displayed in Vertico's interface.
+;; (use-package marginalia
+;;   :ensure t
+;;   :commands (marginalia-mode marginalia-cycle)
+;;   :hook (after-init . marginalia-mode))
+
+;; ;; Embark integrates with Consult and Vertico to provide context-sensitive
+;; ;; actions and quick access to commands based on the current selection, further
+;; ;; improving user efficiency and workflow within Emacs. Together, they create a
+;; ;; cohesive and powerful environment for managing completions and interactions.
+;; (use-package embark
+;;   ;; Embark is an Emacs package that acts like a context menu, allowing
+;;   ;; users to perform context-sensitive actions on selected items
+;;   ;; directly from the completion interface.
+;;   :ensure t
+;;   :commands (embark-act
+;;              embark-dwim
+;;              embark-export
+;;              embark-collect
+;;              embark-bindings
+;;              embark-prefix-help-command)
+;;   :bind
+;;   (("C-." . embark-act)         ;; pick some comfortable binding
+;;    ("C-;" . embark-dwim)        ;; good alternative: M-.
+;;    ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+;;
+;;   :init
+;;   (setq prefix-help-command #'embark-prefix-help-command)
+;;
+;;   :config
+;;   ;; Hide the mode line of the Embark live/completions buffers
+;;   (add-to-list 'display-buffer-alist
+;;                '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+;;                  nil
+;;                  (window-parameters (mode-line-format . none)))))
+
+;; (use-package embark-consult
+;;   :ensure t
+;;   :hook
+;;   (embark-collect-mode . consult-preview-at-point-mode))
+
+;; ;; Consult offers a suite of commands for efficient searching, previewing, and
+;; ;; interacting with buffers, file contents, and more, improving various tasks.
+;; (use-package consult
+;;   :ensure t
+;;   :bind (;; C-c bindings in `mode-specific-map'
+;;          ("C-c M-x" . consult-mode-command)
+;;          ("C-c h" . consult-history)
+;;          ("C-c k" . consult-kmacro)
+;;          ("C-c m" . consult-man)
+;;          ("C-c i" . consult-info)
+;;          ([remap Info-search] . consult-info)
+;;          ;; C-x bindings in `ctl-x-map'
+;;          ("C-x M-:" . consult-complex-command)
+;;          ("C-x b" . consult-buffer)
+;;          ("C-x 4 b" . consult-buffer-other-window)
+;;          ("C-x 5 b" . consult-buffer-other-frame)
+;;          ("C-x t b" . consult-buffer-other-tab)
+;;          ("C-x r b" . consult-bookmark)
+;;          ("C-x p b" . consult-project-buffer)
+;;          ;; Custom M-# bindings for fast register access
+;;          ("M-#" . consult-register-load)
+;;          ("M-'" . consult-register-store)
+;;          ("C-M-#" . consult-register)
+;;          ;; Other custom bindings
+;;          ("M-y" . consult-yank-pop)
+;;          ;; M-g bindings in `goto-map'
+;;          ("M-g e" . consult-compile-error)
+;;          ("M-g f" . consult-flymake)
+;;          ("M-g g" . consult-goto-line)
+;;          ("M-g M-g" . consult-goto-line)
+;;          ("M-g o" . consult-outline)
+;;          ("M-g m" . consult-mark)
+;;          ("M-g k" . consult-global-mark)
+;;          ("M-g i" . consult-imenu)
+;;          ("M-g I" . consult-imenu-multi)
+;;          ;; M-s bindings in `search-map'
+;;          ("M-s d" . consult-find)
+;;          ("M-s c" . consult-locate)
+;;          ("M-s g" . consult-grep)
+;;          ("M-s G" . consult-git-grep)
+;;          ("M-s r" . consult-ripgrep)
+;;          ("M-s l" . consult-line)
+;;          ("M-s L" . consult-line-multi)
+;;          ("M-s k" . consult-keep-lines)
+;;          ("M-s u" . consult-focus-lines)
+;;          ;; Isearch integration
+;;          ("M-s e" . consult-isearch-history)
+;;          :map isearch-mode-map
+;;          ("M-e" . consult-isearch-history)
+;;          ("M-s e" . consult-isearch-history)
+;;          ("M-s l" . consult-line)
+;;          ("M-s L" . consult-line-multi)
+;;          ;; Minibuffer history
+;;          :map minibuffer-local-map
+;;          ("M-s" . consult-history)
+;;          ("M-r" . consult-history))
+;;
+;;   ;; Enable automatic preview at point in the *Completions* buffer.
+;;   :hook (completion-list-mode . consult-preview-at-point-mode)
+;;
+;;   :init
+;;   ;; Optionally configure the register formatting. This improves the register
+;;   (setq register-preview-delay 0.5
+;;         register-preview-function #'consult-register-format)
+;;
+;;   ;; Optionally tweak the register preview window.
+;;   (advice-add #'register-preview :override #'consult-register-window)
+;;
+;;   ;; Use Consult to select xref locations with preview
+;;   (setq xref-show-xrefs-function #'consult-xref
+;;         xref-show-definitions-function #'consult-xref)
+;;
+;;   ;; Aggressive asynchronous that yield instantaneous results. (suitable for
+;;   ;; high-performance systems.) Note: Minad, the author of Consult, does not
+;;   ;; recommend aggressive values.
+;;   ;; Read: https://github.com/minad/consult/discussions/951
+;;   ;;
+;;   ;; However, the author of minimal-emacs.d uses these parameters to achieve
+;;   ;; immediate feedback from Consult.
+;;   ;; (setq consult-async-input-debounce 0.02
+;;   ;;       consult-async-input-throttle 0.05
+;;   ;;       consult-async-refresh-delay 0.02)
+;;
+;;   :config
+;;   (consult-customize
+;;    consult-theme :preview-key '(:debounce 0.2 any)
+;;    consult-ripgrep consult-git-grep consult-grep
+;;    consult-bookmark consult-recent-file consult-xref
+;;    ;; consult--source-bookmark consult--source-file-register
+;;    ;; consult--source-recent-file consult--source-project-recent-file
+;;    ;; :preview-key "M-."
+;;    :preview-key '(:debounce 0.4 any))
+;;   (setq consult-narrow-key "<"))
+
+(use-package helm
   :ensure t
+  :demand t
+  :bind (("M-x"     . helm-M-x)
+         ("C-x C-f" . helm-find-files)
+         ("C-x b"   . helm-mini)
+         ("C-x r b" . helm-filtered-bookmarks)
+         ("M-y"     . helm-show-kill-ring)
+         ("M-g i"   . helm-imenu)
+         ("M-g I"   . helm-imenu-in-all-buffers)
+         ("M-s g"   . helm-do-grep-ag)
+         ("M-s r"   . helm-do-grep-ag)
+         ("C-c h"   . helm-command-prefix)
+         :map helm-map
+         ("<tab>"   . helm-execute-persistent-action)
+         ("C-z"     . helm-select-action))
   :custom
-  (completion-styles '(orderless basic))
-  (completion-category-defaults nil)
-  (completion-category-overrides '((file (styles partial-completion)))))
-
-;; Marginalia allows Embark to offer you preconfigured actions in more contexts.
-;; In addition to that, Marginalia also enhances Vertico by adding rich
-;; annotations to the completion candidates displayed in Vertico's interface.
-(use-package marginalia
-  :ensure t
-  :commands (marginalia-mode marginalia-cycle)
-  :hook (after-init . marginalia-mode))
-
-;; Embark integrates with Consult and Vertico to provide context-sensitive
-;; actions and quick access to commands based on the current selection, further
-;; improving user efficiency and workflow within Emacs. Together, they create a
-;; cohesive and powerful environment for managing completions and interactions.
-(use-package embark
-  ;; Embark is an Emacs package that acts like a context menu, allowing
-  ;; users to perform context-sensitive actions on selected items
-  ;; directly from the completion interface.
-  :ensure t
-  :commands (embark-act
-             embark-dwim
-             embark-export
-             embark-collect
-             embark-bindings
-             embark-prefix-help-command)
-  :bind
-  (("C-." . embark-act)         ;; pick some comfortable binding
-   ("C-;" . embark-dwim)        ;; good alternative: M-.
-   ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
-
-  :init
-  (setq prefix-help-command #'embark-prefix-help-command)
-
+  (helm-split-window-in-side-p t)
+  (helm-move-to-line-cycle-in-source t)
+  (helm-autoresize-max-height 40)
+  (helm-autoresize-min-height 20)
   :config
-  ;; Hide the mode line of the Embark live/completions buffers
-  (add-to-list 'display-buffer-alist
-               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                 nil
-                 (window-parameters (mode-line-format . none)))))
-
-(use-package embark-consult
-  :ensure t
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
-
-;; Consult offers a suite of commands for efficient searching, previewing, and
-;; interacting with buffers, file contents, and more, improving various tasks.
-(use-package consult
-  :ensure t
-  :bind (;; C-c bindings in `mode-specific-map'
-         ("C-c M-x" . consult-mode-command)
-         ("C-c h" . consult-history)
-         ("C-c k" . consult-kmacro)
-         ("C-c m" . consult-man)
-         ("C-c i" . consult-info)
-         ([remap Info-search] . consult-info)
-         ;; C-x bindings in `ctl-x-map'
-         ("C-x M-:" . consult-complex-command)
-         ("C-x b" . consult-buffer)
-         ("C-x 4 b" . consult-buffer-other-window)
-         ("C-x 5 b" . consult-buffer-other-frame)
-         ("C-x t b" . consult-buffer-other-tab)
-         ("C-x r b" . consult-bookmark)
-         ("C-x p b" . consult-project-buffer)
-         ;; Custom M-# bindings for fast register access
-         ("M-#" . consult-register-load)
-         ("M-'" . consult-register-store)
-         ("C-M-#" . consult-register)
-         ;; Other custom bindings
-         ("M-y" . consult-yank-pop)
-         ;; M-g bindings in `goto-map'
-         ("M-g e" . consult-compile-error)
-         ("M-g f" . consult-flymake)
-         ("M-g g" . consult-goto-line)
-         ("M-g M-g" . consult-goto-line)
-         ("M-g o" . consult-outline)
-         ("M-g m" . consult-mark)
-         ("M-g k" . consult-global-mark)
-         ("M-g i" . consult-imenu)
-         ("M-g I" . consult-imenu-multi)
-         ;; M-s bindings in `search-map'
-         ("M-s d" . consult-find)
-         ("M-s c" . consult-locate)
-         ("M-s g" . consult-grep)
-         ("M-s G" . consult-git-grep)
-         ("M-s r" . consult-ripgrep)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ("M-s k" . consult-keep-lines)
-         ("M-s u" . consult-focus-lines)
-         ;; Isearch integration
-         ("M-s e" . consult-isearch-history)
-         :map isearch-mode-map
-         ("M-e" . consult-isearch-history)
-         ("M-s e" . consult-isearch-history)
-         ("M-s l" . consult-line)
-         ("M-s L" . consult-line-multi)
-         ;; Minibuffer history
-         :map minibuffer-local-map
-         ("M-s" . consult-history)
-         ("M-r" . consult-history))
-
-  ;; Enable automatic preview at point in the *Completions* buffer.
-  :hook (completion-list-mode . consult-preview-at-point-mode)
-
-  :init
-  ;; Optionally configure the register formatting. This improves the register
-  (setq register-preview-delay 0.5
-        register-preview-function #'consult-register-format)
-
-  ;; Optionally tweak the register preview window.
-  (advice-add #'register-preview :override #'consult-register-window)
-
-  ;; Use Consult to select xref locations with preview
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
-
-  ;; Aggressive asynchronous that yield instantaneous results. (suitable for
-  ;; high-performance systems.) Note: Minad, the author of Consult, does not
-  ;; recommend aggressive values.
-  ;; Read: https://github.com/minad/consult/discussions/951
-  ;;
-  ;; However, the author of minimal-emacs.d uses these parameters to achieve
-  ;; immediate feedback from Consult.
-  ;; (setq consult-async-input-debounce 0.02
-  ;;       consult-async-input-throttle 0.05
-  ;;       consult-async-refresh-delay 0.02)
-
-  :config
-  (consult-customize
-   consult-theme :preview-key '(:debounce 0.2 any)
-   consult-ripgrep consult-git-grep consult-grep
-   consult-bookmark consult-recent-file consult-xref
-   ;; consult--source-bookmark consult--source-file-register
-   ;; consult--source-recent-file consult--source-project-recent-file
-   ;; :preview-key "M-."
-   :preview-key '(:debounce 0.4 any))
-  (setq consult-narrow-key "<"))
+  (helm-mode 1)
+  (helm-autoresize-mode 1))
 
 ;; The built-in outline-minor-mode provides structured code folding in modes
 ;; such as Emacs Lisp and Python, allowing users to collapse and expand sections
@@ -529,6 +566,23 @@
   :config
   (evil-collection-init))
 
+(use-package evil-mc
+  :ensure t
+  :after evil
+  :commands (evil-mc-make-all-cursors
+             evil-mc-undo-all-cursors
+             evil-mc-make-and-goto-next-match
+             evil-mc-skip-and-goto-next-match)
+  :config
+  (global-evil-mc-mode 1))
+
+(use-package move-text
+  :ensure t
+  :commands (move-text-up move-text-down)
+  :config
+  (global-set-key (kbd "M-p") 'move-text-up)
+  (global-set-key (kbd "M-n") 'move-text-down))
+
 ;; The evil-surround package simplifies handling surrounding characters, such as
 ;; parentheses, brackets, quotes, etc. It provides key bindings to easily add,
 ;; change, or delete these surrounding characters in pairs. For instance, you
@@ -615,6 +669,22 @@
               ("C-c C-r" . 'odin-run-project)
               ("C-c C-c" . 'odin-build-project)
               ("C-c C-t" . 'odin-test-project)))
+
+;; K&R style auto-formatting for C/C++ (astyle)
+(defun astyle-buffer (&optional justify)
+  (interactive)
+  (let ((saved-line-number (line-number-at-pos)))
+    (shell-command-on-region
+     (point-min)
+     (point-max)
+     "astyle --style=kr"
+     nil
+     t)
+    (goto-line saved-line-number)))
+
+(with-eval-after-load "cc-mode"
+  (define-key c-mode-map (kbd "C-c C-f") 'astyle-buffer)
+  (define-key c++-mode-map (kbd "C-c C-f") 'astyle-buffer))
 
 ;; Org mode is a major mode designed for organizing notes, planning, task
 ;; management, and authoring documents using plain text with a simple and
@@ -955,3 +1025,28 @@
   ;; Handy keybinds
   (global-set-key (kbd "C-c e r") #'org-reveal-export-to-html)
   (global-set-key (kbd "C-c e R") #'org-reveal-export-as-html))
+
+;; EMAIL: Mu4e
+(use-package mu4e
+  :ensure nil
+  :config
+  (setq mu4e-maildir "~/.mail/gmail")
+
+  ;; Sync mail
+  (setq mu4e-get-mail-command "mbsync gmail"
+        mu4e-update-interval 300)
+
+  ;; Identity
+  (setq user-mail-address "vetr0s.dev@gmail.com"
+        user-full-name "Nathan Tebbs")
+
+  ;; Sent/Drafts/Trash folders (Gmail format)
+  (setq mu4e-sent-folder   "/[Gmail]/Sent Mail"
+        mu4e-drafts-folder "/[Gmail]/Drafts"
+        mu4e-trash-folder  "/[Gmail]/Trash")
+
+  ;; SMTP (sending mail)
+  (setq message-send-mail-function 'smtpmail-send-it
+        smtpmail-smtp-server "smtp.gmail.com"
+        smtpmail-smtp-service 587
+        smtpmail-stream-type 'starttls))
