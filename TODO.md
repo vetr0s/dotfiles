@@ -1,15 +1,9 @@
 # TODO
 
-- [ ] Fix Scripts: less clutter in root + need OS specific option selection
-
-- [ ] Fix `deploy.sh` colors
-    - [ ] Add OS Specific Customizations (e.g. MacOS doesn't need hypr/ dir
-        symlinked)
-- [ ] Alacritty -> Kitty
-- [ ] i3 -> Hyprland
-- [ ] Automate font installation (Zenbones Brainy)
-- [ ] Automate omz .zshrc configuration including
-    - [ ] Auto source ./config.zsh
-        - On linux desktop: why doesn't terminal start with config.zsh sourced?
-    - [ ] Append required standard export commands
-- [ ] Update README.md for Neovim addition (desktop env only)
+- [x] Fix Scripts: less clutter in root (moved to `util/scripts/`)
+- [x] Fix `deploy.sh`: Add OS Specific Customizations (macOS skips waybar, rofi, hyprland)
+- [x] Alacritty -> Kitty
+- [x] i3 -> Hyprland (i3 removed)
+- [x] Automate font installation (`util/scripts/install-fonts.sh` — place fonts in `fonts/`)
+- [x] Automate omz `.zshrc` configuration (fixed absolute path in `install-omz.sh`)
+- [x] Update README.md for Neovim addition
