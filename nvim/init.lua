@@ -133,15 +133,37 @@ map("n", "<C-c><C-p>c", "<cmd>Lazy clean<cr>", { desc = "Plugins: clean" })
 -- Plugins
 -- =====================
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.uv.fs_stat(lazypath) then
-  vim.fn.system({
+local lazy_init = lazypath .. "/lua/lazy/init.lua"
+if not vim.uv.fs_stat(lazy_init) then
+  if vim.uv.fs_stat(lazypath) then
+    error("lazy.nvim exists but is not a valid checkout: " .. lazypath)
+  end
+
+  local parent = vim.fs.dirname(lazypath)
+  vim.fn.mkdir(parent, "p")
+  local temporary, temporary_error = vim.uv.fs_mkdtemp(parent .. "/lazy.nvim.XXXXXX")
+  if not temporary then
+    error("could not create a temporary lazy.nvim checkout: " .. temporary_error)
+  end
+
+  local clone = vim.system({
     "git",
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
     "--branch=stable",
-    lazypath,
-  })
+    temporary,
+  }):wait()
+  if clone.code ~= 0 or not vim.uv.fs_stat(temporary .. "/lua/lazy/init.lua") then
+    vim.fs.rm(temporary, { recursive = true, force = true })
+    error("could not install lazy.nvim: " .. vim.trim(clone.stderr or "unknown error"))
+  end
+
+  local renamed, rename_error = vim.uv.fs_rename(temporary, lazypath)
+  if not renamed then
+    vim.fs.rm(temporary, { recursive = true, force = true })
+    error("could not install lazy.nvim: " .. rename_error)
+  end
 end
 vim.opt.rtp:prepend(lazypath)
 

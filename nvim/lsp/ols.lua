@@ -5,10 +5,10 @@
 --
 -- ols reads ols.json at the workspace root for collections and checker flags.
 -- Without one it still resolves the core library and the current package, so
--- the marker list falls back to the same roots ftplugin/odin.lua builds from.
+-- the marker list falls back to the same roots after/ftplugin/odin.lua uses.
 
 return {
   cmd = { "ols" },
   filetypes = { "odin" },
-  root_markers = { "ols.json", "odinfmt.json", ".git" },
+  root_markers = { { ".git", "ols.json", "odinfmt.json" } },
 }

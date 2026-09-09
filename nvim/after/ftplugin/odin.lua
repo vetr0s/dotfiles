@@ -1,4 +1,4 @@
--- ~/.config/nvim/ftplugin/odin.lua
+-- ~/.config/nvim/after/ftplugin/odin.lua
 -- Runs after Neovim's own ftplugin/odin.vim, which sets commentstring and
 -- suffixesadd. Indentation, :make and format on save are what it leaves out.
 --
@@ -41,7 +41,7 @@ end
 -- A Makefile at the root wins, since it already carries the flags and the
 -- -out: path a bare odin build would have to invent.
 local buffer_dir = vim.fn.expand("%:p:h")
-local root = vim.fs.root(0, { ".git", "ols.json", "odinfmt.json" }) or buffer_dir
+local root = vim.fs.root(0, { { ".git", "ols.json", "odinfmt.json" } }) or buffer_dir
 
 if vim.uv.fs_stat(root .. "/Makefile") then
   vim.bo.makeprg = "make -C " .. vim.fn.fnameescape(root)
@@ -89,3 +89,4 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 vim.b.undo_ftplugin = (vim.b.undo_ftplugin or "")
   .. " | setlocal expandtab< tabstop< shiftwidth< softtabstop<"
   .. " errorformat< makeprg<"
+  .. " | lua vim.api.nvim_clear_autocmds({ group = 'rc_odin', buffer = 0 })"

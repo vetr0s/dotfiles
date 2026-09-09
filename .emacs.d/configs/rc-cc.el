@@ -20,6 +20,7 @@
 ;;; Code:
 
 (require 'treesit)
+(require 'subr-x)
 
 ;; Loaded by the hooks below rather than at startup: `project-current' is
 ;; autoloaded and pulls in the rest of project.el on first use.
@@ -87,10 +88,6 @@ The cc-mode half of the defaults above, which cc-mode does not read."
 ;; every save, so typing to a different width means each save moves the line
 ;; that was just written. clang-format resolves the whole cascade, BasedOnStyle
 ;; and nested directories included, so ask it rather than parsing the YAML.
-(defvar rc-cc--style-cache (make-hash-table :test #'equal)
-  "Resolved clang-format configurations, keyed by directory.
-Resolving costs a process, and every file in a directory resolves alike.")
-
 (defun rc-cc--dump-config (file)
   "Return clang-format's resolved configuration for FILE, or nil."
   (when (executable-find "clang-format")
@@ -117,10 +114,8 @@ Resolving costs a process, and every file in a directory resolves alike.")
     (_ 'k&r)))
 
 (defun rc-cc--config-for (file)
-  "Return clang-format's resolved configuration for FILE, cached by directory.
-An empty string when clang-format could not say, which caches too."
-  (with-memoization (gethash (file-name-directory file) rc-cc--style-cache)
-    (or (rc-cc--dump-config file) "")))
+  "Return clang-format's current resolved configuration for FILE."
+  (or (rc-cc--dump-config file) ""))
 
 (defun rc-cc-follow-clang-format ()
   "Indent this buffer the way clang-format will reformat it on save."
@@ -241,33 +236,19 @@ Nil on the directive's own first line, which needs no help."
 ;; rewrap to ColumnLimit and append a comment to a namespace's closing brace,
 ;; and neither belongs in something bound to TAB.
 
-(defvar rc-cc--style-file-cache (make-hash-table :test #'equal)
-  "Generated clang-format style files, keyed by directory.")
-
 ;; clang-format has no indent-only mode, and left to itself it would also
 ;; rewrap to ColumnLimit. That changes how many lines come back, which would
 ;; put every column after the first rewrap on the wrong line. Dumping the
 ;; resolved style with the limit lifted keeps the line breaks exactly as they
 ;; are and leaves indentation the only thing that moves.
-(defun rc-cc--style-file (file)
-  "Return the path of a style file for FILE that will not reflow, or nil."
-  (let ((cached (gethash (file-name-directory file) rc-cc--style-file-cache)))
-    (cond
-     ((stringp cached) cached)
-     (cached nil)
-     (t
-      (let* ((config (rc-cc--config-for file))
-             (path (and (not (string-empty-p config))
-                        (make-temp-file "rc-cc-style" nil ".yaml"))))
-        (when path
-          (with-temp-file path
-            (insert config)
-            (goto-char (point-min))
-            (when (re-search-forward "^ColumnLimit: .*$" nil t)
-              (replace-match "ColumnLimit: 0"))))
-        (puthash (file-name-directory file) (or path 'none)
-                 rc-cc--style-file-cache)
-        path)))))
+(defun rc-cc--indent-only-style (file)
+  "Return FILE's resolved style with line wrapping disabled."
+  (let ((config (rc-cc--config-for file)))
+    (unless (string-empty-p config)
+      (setq config
+            (replace-regexp-in-string
+             "^\\(?:---\\|\\.\\.\\.\\) *\n" "" config))
+      (replace-regexp-in-string "^ColumnLimit: .*$" "ColumnLimit: 0" config))))
 
 (defun rc-cc--line-indent ()
   "Return the leading whitespace of the current line, verbatim."
@@ -281,25 +262,31 @@ Nil when clang-format fails, or when it returned a different number of
 lines, which would put these on the wrong ones. The whitespace is taken
 verbatim rather than as a column, so tabs land exactly where clang-format
 put them instead of being re-derived from `indent-tabs-mode'."
-  (when-let* ((style (rc-cc--style-file (or buffer-file-name default-directory)))
+  (when-let* ((style (rc-cc--indent-only-style
+                      (or buffer-file-name default-directory)))
               (source (buffer-string))
               (name (or buffer-file-name (buffer-name)))
               (lines (line-number-at-pos (point-max))))
-    (with-temp-buffer
-      (insert source)
-      (when (and (eq 0 (call-process-region
-                        (point-min) (point-max) "clang-format" t t nil
-                        (format "--lines=%d:%d" first last)
-                        (concat "--style=file:" style)
-                        (concat "-assume-filename=" name)))
-                 (= lines (line-number-at-pos (point-max))))
-        (goto-char (point-min))
-        (forward-line (1- first))
-        (let ((indents nil))
-          (dotimes (_ (1+ (- last first)))
-            (push (rc-cc--line-indent) indents)
-            (forward-line 1))
-          (nreverse indents))))))
+    (let ((style-file (make-temp-file "rc-cc-style" nil ".yaml")))
+      (unwind-protect
+          (progn
+            (write-region style nil style-file nil :silent)
+            (with-temp-buffer
+              (insert source)
+              (when (and (eq 0 (call-process-region
+                                (point-min) (point-max) "clang-format" t t nil
+                                (format "--lines=%d:%d" first last)
+                                (concat "--style=file:" style-file)
+                                (concat "-assume-filename=" name)))
+                         (= lines (line-number-at-pos (point-max))))
+                (goto-char (point-min))
+                (forward-line (1- first))
+                (let ((indents nil))
+                  (dotimes (_ (1+ (- last first)))
+                    (push (rc-cc--line-indent) indents)
+                    (forward-line 1))
+                  (nreverse indents)))))
+        (delete-file style-file)))))
 
 (defun rc-cc-indent-region (beg end)
   "Indent BEG to END to the columns clang-format would use.

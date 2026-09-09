@@ -34,7 +34,7 @@ because it repairs `PATH`, which everything shelling out depends on.
 | `rc-evil` | Evil, evil-collection, evil-mc, evil-surround, undo-fu, move-text |
 | `rc-editing` | Outline folding, stripspace, apheleia, YASnippet, spelling |
 | `rc-elisp` | paredit, aggressive-indent, highlight-defined, helpful |
-| `rc-programming` | Tags, Python (tree-sitter, pyvenv, Flymake), Markdown |
+| `rc-programming` | Tags, Python (tree-sitter, local environments, Flymake), Markdown |
 | `rc-cc` | C and C++: tree-sitter modes, clang-format indentation, CMake |
 | `rc-zig` | Zig: build command |
 | `rc-odin` | Odin: `odin-ts-mode` written here, odinfmt |
@@ -113,10 +113,9 @@ M-x rc-programming-install-python-grammar
 The Python workflow expects [uv](https://github.com/astral-sh/uv) and
 [ruff](https://github.com/astral-sh/ruff) on `PATH`.
 
-uv puts its environment at `.venv` in the project root and exports nothing, so
-opening a Python file walks up for that directory and hands it to pyvenv. That
-is what puts the project's own interpreter and its `ruff` on `exec-path`, which
-is what everything below then finds.
+uv puts its environment at `.venv` in the project root and exports nothing.
+Opening a Python file adds that environment to the buffer-local `exec-path` and
+`process-environment`. Open projects cannot replace each other's tools.
 
 Linting is Flymake over `ruff check`. It falls back to `flake8` when a project
 environment provides it. Both print `stdin:line:col: CODE message`, which is

@@ -27,11 +27,6 @@
 ;; Only for the compilation-error-regexp variables set at the end of the file.
 (eval-when-compile (require 'compile))
 
-;; Loaded by the hooks below rather than at startup: `project-current' is
-;; autoloaded and pulls in the rest of project.el on first use.
-(declare-function project-current "project")
-(declare-function project-root "project")
-
 (defgroup rc-odin nil
   "Odin language support."
   :group 'languages)
@@ -356,12 +351,19 @@ Used only when it exists and holds Odin source."
   :type 'string
   :group 'rc-odin)
 
-;; Expanded, because `project-root' can hand back an abbreviated path and
-;; `shell-quote-argument' escapes the ~ into a literal the shell never expands.
+(defconst rc-odin--root-markers '(".git" "ols.json" "odinfmt.json")
+  "Files and directories that identify an Odin project root.")
+
 (defun rc-odin--root ()
   "Return the root of the project owning the current buffer, or nil."
-  (when-let* ((project (project-current))
-              (root (project-root project)))
+  (when-let* ((root
+               (locate-dominating-file
+                default-directory
+                (lambda (directory)
+                  (catch 'found
+                    (dolist (marker rc-odin--root-markers)
+                      (when (file-exists-p (expand-file-name marker directory))
+                        (throw 'found t))))))))
     (expand-file-name root)))
 
 (defun rc-odin--package-p (dir)
