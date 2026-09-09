@@ -1,6 +1,6 @@
 " Author: Nathan Tebbs
 " File: .vimrc
-" Modified: 2026-08-04
+" Modified: 2026-09-08
 "
 " A .vimrc suppresses vim's defaults.vim, so anything that file would have
 " given us has to be spelled out here. Everything below is stock vim; the
@@ -176,11 +176,11 @@ xnoremap > >gv
 if filereadable(expand('~/.vim/autoload/plug.vim'))
   call plug#begin('~/.vim/plugged')
 
-  Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
-  Plug 'junegunn/fzf.vim'
-  Plug 'tpope/vim-surround'
-  Plug 'sakshamgupta05/vim-todo-highlight'
-  Plug 'mbbill/undotree'
+  Plug 'junegunn/fzf', { 'commit': '029b241dbb685e60bc86bb9b5abc293e5d17119c', 'do': { -> fzf#install() } }
+  Plug 'junegunn/fzf.vim', { 'commit': 'ddc14a6a5471147e2a38e6b32a7268282f669b0a' }
+  Plug 'tpope/vim-surround', { 'commit': '3d188ed2113431cf8dac77be61b842acb64433d9' }
+  Plug 'sakshamgupta05/vim-todo-highlight', { 'commit': 'f63723ef9f3a1cf0a3fd63b84b161c287fea398f' }
+  Plug 'mbbill/undotree', { 'commit': '178d19e00a643f825ea11d581b1684745d0c4eda' }
 
   call plug#end()
 endif

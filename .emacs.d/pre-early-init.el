@@ -8,8 +8,11 @@
 
 ;;; Code:
 
-(add-to-list 'load-path
-             (expand-file-name "configs/" user-emacs-directory))
+(defconst rc-emacs-config-directory
+  (file-name-as-directory user-emacs-directory)
+  "Directory holding the tracked Emacs configuration.")
+
+(add-to-list 'load-path (expand-file-name "configs/" rc-emacs-config-directory))
 
 (defconst rc-emacs-state-directory
   (file-name-as-directory

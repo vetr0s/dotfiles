@@ -3,6 +3,11 @@
 This directory defines my Arch Linux desktop. It assumes Hyprland,
 Hyprlauncher, Waybar, Dunst, PipeWire, NetworkManager, Kitty, and Dolphin.
 
+## Requirements
+
+Install Git and Bash before deployment. Install Emacs with `emacsclient` when
+using the service. Install Neovim 0.12 or newer for the Neovim configuration.
+
 ## Packages
 
 Deployment never runs `sudo`, `pacman`, or `yay`. Check the package manifest:
@@ -29,6 +34,7 @@ Deployment links the shared configuration and these Linux directories:
 - `~/.config/hypr`
 - `~/.config/waybar`
 - `~/.config/dunst`
+- `~/.config/systemd/user/emacs.service`
 
 The deployer moves each existing target to a timestamped backup. It leaves an
 existing correct link alone.
@@ -68,8 +74,12 @@ hyprctl configerrors
 Arch provides an Emacs user service. Enable it once if needed:
 
 ```sh
+systemctl --user daemon-reload
 systemctl --user enable --now emacs.service
 ```
 
 The Bash function `emacsctl` starts, stops, restarts, checks, and follows logs
 for that service.
+
+`emacsctl start` reloads the user service definitions before starting Emacs.
+Both `start` and `restart` wait for the server socket before returning.

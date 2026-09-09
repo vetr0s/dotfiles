@@ -17,6 +17,9 @@ brew bundle --file macos/Brewfile
 
 The root setup script does not run Homebrew.
 
+Git and Bash are required for deployment. The Brewfile supplies Neovim 0.12
+or newer and the optional tools used directly by these files.
+
 ## Setup
 
 Deploy the shared and macOS configuration from the repository root:
@@ -51,3 +54,4 @@ root setup script. The shell uses Neovim for `$EDITOR` and `$VISUAL`.
 
 Run `emacsctl start` after the first deployment. A later login also loads the
 agent through `RunAtLoad`. Use `emacsctl restart` after the agent changes.
+Use `emacsctl logs` when the daemon does not become ready.

@@ -29,9 +29,8 @@ if grep -Fq 'tmux-mem-cpu-load' "$ROOT/tmux/tmux.conf"; then
   fail "tmux calls an undeclared status helper"
 fi
 
-description="$(jq -r '.profiles[0].complex_modifications.rules[0].description' \
-  "$ROOT/macos/karabiner/karabiner.json")"
-if [ "$description" != "HHKB: F3 plus F1 through F3 types 1 through 3" ]; then
+if ! grep -Fq '"description": "HHKB: F3 plus F1 through F3 types 1 through 3"' \
+  "$ROOT/macos/karabiner/karabiner.json"; then
   fail "Karabiner describes keys that it does not map"
 fi
 
@@ -52,6 +51,27 @@ fi
 if ! grep -Fq 'BUILD_ROOT="$(mktemp -d' \
   "$ROOT/macos/scripts/make-emacsclient-app.sh"; then
   fail "the Emacsclient app is not built before replacement"
+fi
+
+if grep -Fq 'vim-plug/master/plug.vim' \
+  "$ROOT/util/scripts/install-vimplug.sh"; then
+  fail "the vim-plug installer downloads a moving branch"
+fi
+
+if grep -Fq 'git -C "$SRC_DIR" pull' "$ROOT/util/scripts/install-ols.sh" \
+  || ! grep -Eq "OLS_REVISION=.*[0-9a-f]{40}" \
+    "$ROOT/util/scripts/install-ols.sh"; then
+  fail "the OLS installer does not use an immutable revision"
+fi
+
+if ! grep -Fq 'd2ca8efb4487e156a60d5bd6db2598b872629403' \
+  "$ROOT/.emacs.d/configs/rc-odin.el"; then
+  fail "the Emacs Odin grammar is not pinned"
+fi
+
+if grep -E '^  Plug ' "$ROOT/.vimrc" | grep -Ev "'commit': '[0-9a-f]{40}'" \
+  | grep -q .; then
+  fail "a Vim plugin is not pinned to an immutable revision"
 fi
 
 mock_root="$(mktemp -d "${TMPDIR:-/tmp}/dotfiles-emacsctl.XXXXXX")"

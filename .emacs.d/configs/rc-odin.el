@@ -8,9 +8,8 @@
 ;; almost entirely unfontified, and odin-ts-mode ships no releases and warns in
 ;; its own README that it crashes.
 ;;
-;; The grammar is tree-sitter-grammars/tree-sitter-odin, compiled into
-;; ~/.emacs.d/tree-sitter by `rc-odin-install-grammar'. That directory is
-;; gitignored, so a fresh machine runs the command once.
+;; The grammar is tree-sitter-grammars/tree-sitter-odin. The installer compiles
+;; its pinned revision under `rc-emacs-state-directory'.
 ;;
 ;; The queries follow the grammar's own highlights.scm where they translate.
 ;; Two rules from it are left out on purpose. Its "a capitalised identifier is
@@ -37,7 +36,9 @@
   :group 'rc-odin)
 
 (add-to-list 'treesit-language-source-alist
-             '(odin "https://github.com/tree-sitter-grammars/tree-sitter-odin"))
+             '(odin
+               "https://github.com/tree-sitter-grammars/tree-sitter-odin"
+               "d2ca8efb4487e156a60d5bd6db2598b872629403"))
 
 (defun rc-odin-install-grammar ()
   "Compile and install the Odin tree-sitter grammar."

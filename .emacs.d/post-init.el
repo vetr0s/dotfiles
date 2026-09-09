@@ -13,8 +13,11 @@
 
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 
-;; Install what this machine is missing.
+(require 'rc-packages)
+
+;; Install what this machine is missing, then reject unreviewed revisions.
 (package-install-selected-packages :no-confirm)
+(rc-package-verify-lock)
 
 ;; early-init.el points `custom-file' here but never loads it, so anything set
 ;; through customize was written and ignored. Before the modules, so they win.

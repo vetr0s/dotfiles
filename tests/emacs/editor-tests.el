@@ -6,9 +6,24 @@
 (require 'rc-odin)
 (require 'rc-programming)
 
+(load (expand-file-name ".emacs.d/pre-init.el" default-directory)
+      nil :nomessage)
+
 (defun rc-test--write-file (path contents)
   (make-directory (file-name-directory path) t)
   (write-region contents nil path nil :silent))
+
+(ert-deftest rc-package-lock-matches-installed-packages ()
+  (should (require 'rc-packages nil t))
+  (should (> (length (rc-package--dependency-closure)) 40))
+  (rc-package-verify-lock))
+
+(ert-deftest rc-package-lock-rejects-a-different-revision ()
+  (require 'rc-packages)
+  (let ((rc-package-lock (copy-tree rc-package-lock)))
+    (setf (caddr (assq 'vertico rc-package-lock))
+          "0000000000000000000000000000000000000000")
+    (should-error (rc-package-verify-lock))))
 
 (ert-deftest rc-programming-keeps-venvs-buffer-local ()
   (let ((root-a (make-temp-file "rc-python-a" t))

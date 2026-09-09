@@ -67,8 +67,7 @@
         '((sequence "TODO(t)" "NEXT(n)" "WAIT(w@/!)" "|" "DONE(d!)" "CANCELLED(c@)")
           (sequence "IDEA(i)" "ACTIVE(a)" "PAUSED(p@)" "|" "SHIPPED(s!)" "DROPPED(x@)")))
 
-  ;; Inherited rather than named colours, so the keywords follow whichever way
-  ;; `modus-themes-toggle' last left the theme.
+  ;; Inherited faces keep the keywords aligned with the active Doom theme.
   (setq org-todo-keyword-faces
         '(("TODO" . (:inherit error :weight bold))
           ("NEXT" . (:inherit warning :weight bold))

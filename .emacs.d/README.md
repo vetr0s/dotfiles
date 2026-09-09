@@ -20,7 +20,8 @@ files, and session data live there. Native compilation output lives under
 |------|------|
 | `pre-early-init.el` | Separates runtime state, sets `load-path`, and reports startup time |
 | `pre-init.el` | The package manifest, read before `package-initialize` |
-| `post-init.el` | Installs what is missing, loads `custom-file`, requires the modules |
+| `package-lock.el` | Exact package versions and source revisions |
+| `post-init.el` | Installs and verifies packages, then loads the modules |
 | `configs/rc-*.el` | The actual configuration, one file per concern |
 
 Modules are ordinary Elisp with `provide`/`require`. `rc-defaults` comes first
@@ -44,18 +45,26 @@ because it repairs `PATH`, which everything shelling out depends on.
 
 ## Packages
 
-Declared in `pre-init.el` as `package-selected-packages` and installed on
-first start. Packages come from the configured GNU ELPA, NonGNU ELPA, MELPA,
-and MELPA Stable archives. Nothing is pulled directly from a repository.
+`pre-init.el` declares the package manifest. `package-lock.el` records the
+exact installed version and upstream commit for its full dependency closure.
+Startup stops before loading the modules when an installed package differs
+from that lock.
+
+Packages come from GNU ELPA, NonGNU ELPA, MELPA, and MELPA Stable. Nothing is
+pulled directly from a repository. `package.el` installs missing packages.
+The lock prevents a changed archive build from being accepted silently.
 
 Org is deliberately **not** in the manifest: Emacs ships a current one, and a
 second copy from ELPA races the built-in for load order.
 
-To update everything:
+Update packages from a running Emacs. Write the new lock before restarting:
 
 ```
 M-x package-upgrade-all
+M-x rc-package-write-lock
 ```
+
+Review `package-lock.el` with the configuration change that needs the update.
 
 ## Odin
 
@@ -70,8 +79,10 @@ The grammar is not vendored. On a new machine:
 M-x rc-odin-install-grammar
 ```
 
-That compiles [tree-sitter-odin](https://github.com/tree-sitter-grammars/tree-sitter-odin)
-into `.emacs.d/tree-sitter/`, which is gitignored.
+That compiles a pinned revision of
+[tree-sitter-odin](https://github.com/tree-sitter-grammars/tree-sitter-odin)
+into `$XDG_DATA_HOME/emacs/tree-sitter/`. The fallback is
+`~/.local/share/emacs/tree-sitter/`.
 
 Formatting on save is apheleia running `odinfmt -stdin`. It reads a project's
 `odinfmt.json` if there is one, so both editors produce the same result. The
@@ -136,7 +147,8 @@ M-x rc-cc-install-grammars
 ```
 
 That builds the C, C++, Doxygen and CMake grammars into
-`.emacs.d/tree-sitter/`. Then, once per project:
+`$XDG_DATA_HOME/emacs/tree-sitter/`. The fallback is
+`~/.local/share/emacs/tree-sitter/`. Then, once per project:
 
 ```
 M-x rc-cc-cmake-configure
@@ -163,8 +175,9 @@ says two columns you would type at four and watch every save move the line.
 Opening a C or C++ buffer asks `clang-format --dump-config` what actually
 applies to that file and sets `c-ts-indent-offset`, `c-basic-offset` and
 `indent-tabs-mode` from the answer. Asking clang-format rather than parsing the
-YAML is what resolves `BasedOnStyle` and nested directories correctly. One
-process per directory, cached.
+YAML is what resolves `BasedOnStyle` and nested directories correctly. Each
+request reads the current configuration. C and C++ files can resolve different
+language sections in the same directory.
 
 `BreakBeforeBraces` maps onto a `c-ts-mode` indent style as well, so an Allman
 project types Allman.
@@ -240,7 +253,7 @@ filesystems are case-insensitive, which is why the Emacs one is not `TAGS`.
 
 The configuration is shared. Each host owns the Emacs binary and daemon. See
 the [macOS instructions](../macos/README.md) or
-[Linux boundary](../linux/README.md). The root
+[Linux instructions](../linux/README.md). The root
 [Emacs daemon section](../README.md#emacs-daemon) describes client behavior.
 
 Because the daemon has no frame at startup, the font and theme are applied

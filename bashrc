@@ -1,8 +1,8 @@
 # Interactive bash.
 #
 # The split from the zsh setup carries over: this file is the shell-specific
-# half (history, shopt, keymap, prompt) and config.bash is the portable half
-# (aliases, functions, PATH) that any POSIX shell can source.
+# half (history, shopt, keymap, prompt) and config.bash is the shared Bash half
+# (aliases, functions, PATH).
 
 # Non-interactive shells want none of this. scp and rsync break if a
 # startup file writes to stdout, so bail before anything can.
@@ -167,7 +167,7 @@ __prompt() {
   # because the eye finds the second one without looking.
   local mark=$off
   if [ "$status" != 0 ]; then
-    line+=" ${bad}✗$status"
+    line+=" ${bad}!$status"
     mark=$bad
   fi
 

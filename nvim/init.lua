@@ -132,6 +132,14 @@ map("n", "<C-c><C-p>c", "<cmd>Lazy clean<cr>", { desc = "Plugins: clean" })
 -- =====================
 -- Plugins
 -- =====================
+local lockpath = vim.fn.stdpath("config") .. "/lazy-lock.json"
+local lockfile = vim.json.decode(table.concat(vim.fn.readfile(lockpath), "\n"))
+local lazy_revision = lockfile["lazy.nvim"] and lockfile["lazy.nvim"].commit
+if not lazy_revision or #lazy_revision ~= 40
+  or not lazy_revision:match("^[0-9a-f]+$") then
+  error("lazy-lock.json does not pin lazy.nvim")
+end
+
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 local lazy_init = lazypath .. "/lua/lazy/init.lua"
 if not vim.uv.fs_stat(lazy_init) then
@@ -150,13 +158,23 @@ if not vim.uv.fs_stat(lazy_init) then
     "git",
     "clone",
     "--filter=blob:none",
+    "--no-checkout",
     "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable",
     temporary,
   }):wait()
-  if clone.code ~= 0 or not vim.uv.fs_stat(temporary .. "/lua/lazy/init.lua") then
+  local checkout = vim.system({
+    "git",
+    "-C",
+    temporary,
+    "checkout",
+    "--detach",
+    lazy_revision,
+  }):wait()
+  if clone.code ~= 0 or checkout.code ~= 0
+    or not vim.uv.fs_stat(temporary .. "/lua/lazy/init.lua") then
     vim.fs.rm(temporary, { recursive = true, force = true })
-    error("could not install lazy.nvim: " .. vim.trim(clone.stderr or "unknown error"))
+    local detail = clone.code ~= 0 and clone.stderr or checkout.stderr
+    error("could not install lazy.nvim: " .. vim.trim(detail or "unknown error"))
   end
 
   local renamed, rename_error = vim.uv.fs_rename(temporary, lazypath)
@@ -164,6 +182,11 @@ if not vim.uv.fs_stat(lazy_init) then
     vim.fs.rm(temporary, { recursive = true, force = true })
     error("could not install lazy.nvim: " .. rename_error)
   end
+end
+
+local lazy_head = vim.system({ "git", "-C", lazypath, "rev-parse", "HEAD" }):wait()
+if lazy_head.code ~= 0 or vim.trim(lazy_head.stdout) ~= lazy_revision then
+  error("lazy.nvim does not match lazy-lock.json: " .. lazypath)
 end
 vim.opt.rtp:prepend(lazypath)
 
