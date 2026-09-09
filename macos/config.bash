@@ -3,11 +3,13 @@ emacsctl() {
   local label="dev.nathantebbs.emacs"
   local target="gui/$(id -u)/$label"
 
-  case "$1" in
+  case "${1:-}" in
     start)
-      launchctl bootstrap "gui/$(id -u)" \
-        "$HOME/Library/LaunchAgents/$label.plist" 2>/dev/null \
-        || launchctl kickstart "$target" ;;
+      if ! launchctl bootstrap "gui/$(id -u)" \
+        "$HOME/Library/LaunchAgents/$label.plist" 2>/dev/null; then
+        launchctl kickstart "$target"
+      fi
+      _emacsctl_wait_ready ;;
     stop) launchctl bootout "$target" ;;
     restart)
       launchctl print "$target" >/dev/null 2>&1 && launchctl bootout "$target"

@@ -13,13 +13,14 @@
 # workspace is focused now. aerospace.toml floats it on sight by matching the
 # title, which -T pins against anything the shell inside tries to set.
 
-set -e
+set -euo pipefail
 
 TITLE="kitty-float"
-KITTY="/Applications/kitty.app/Contents/MacOS/kitty"
+KITTY="${KITTY:-/Applications/kitty.app/Contents/MacOS/kitty}"
 
 id=$(aerospace list-windows --all --format '%{window-id}|%{window-title}' \
-  | awk -F'|' -v t="$TITLE" '$2 == t { gsub(/ /, "", $1); print $1; exit }')
+  | awk -F'|' -v t="$TITLE" \
+      '$2 == t && !found { gsub(/ /, "", $1); print $1; found = 1 }')
 
 if [ -z "$id" ]; then
   exec "$KITTY" --detach --title "$TITLE" \

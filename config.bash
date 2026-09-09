@@ -1,7 +1,7 @@
 # -n is what frees the terminal. The old "&disown" backgrounded the alias
 # itself, which also threw away emacsclient's errors when the daemon was down.
-# No -a "": that would start a daemon outside the service manager, which
-# emacsctl could not then stop. If these say no socket, run emacsctl start.
+# No -a "": that would start a daemon outside the service manager. Run
+# emacsctl start if these report that no socket exists.
 alias emacs='emacsclient -c -n'
 alias e='emacsclient -n'
 alias et='emacsclient -t'
@@ -62,15 +62,6 @@ alias gca!='git commit -v -a --amend'
 [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
 [ -d "$HOME/.cargo/bin" ] && export PATH="$HOME/.cargo/bin:$PATH"
 [ -d "$HOME/go/bin" ]     && export PATH="$HOME/go/bin:$PATH"
-
-# The current directory, last, so an installed command always wins over a file
-# of the same name sitting in a checkout. That ordering is what makes this
-# tolerable; it still means `cd`ing into an untrusted tree puts its executables
-# one typo away. Traded knowingly against typing ./ for every local binary.
-case ":$PATH:" in
-  *:.:*) ;;
-  *) export PATH="$PATH:." ;;
-esac
 
 # ~/.bun/_bun is a zsh compdef file with no bash equivalent, so only the
 # binary comes across.

@@ -4,7 +4,7 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "description": "HHKB: Fix F3 + 1–9",
+                        "description": "HHKB: F3 plus F1 through F3 types 1 through 3",
                         "manipulators": [
                             {
                                 "from": {
