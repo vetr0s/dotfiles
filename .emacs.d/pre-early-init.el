@@ -1,14 +1,32 @@
-;;; pre-early-init.el --- Load path and startup report -*- no-byte-compile: t; lexical-binding: t; -*-
+;;; pre-early-init.el --- Configuration and state roots -*- no-byte-compile: t; lexical-binding: t; -*-
 
 ;;; Commentary:
 
-;; The first file minimal-emacs.d loads. Nothing in configs/ is reachable until
-;; that directory is on the load path, so it goes in before anything else runs.
+;; minimal-emacs.d captures its configuration root before loading this file.
+;; Runtime data can therefore leave the checkout without changing how the
+;; remaining init files load.
 
 ;;; Code:
 
 (add-to-list 'load-path
              (expand-file-name "configs/" user-emacs-directory))
+
+(defconst rc-emacs-state-directory
+  (file-name-as-directory
+   (expand-file-name
+    "emacs"
+    (or (getenv "XDG_DATA_HOME") (expand-file-name "~/.local/share"))))
+  "Directory for persistent Emacs state and installed packages.")
+
+(make-directory rc-emacs-state-directory t)
+(setq user-emacs-directory rc-emacs-state-directory
+      package-user-dir (expand-file-name "elpa" rc-emacs-state-directory))
+
+(when (fboundp 'startup-redirect-eln-cache)
+  (startup-redirect-eln-cache
+   (expand-file-name
+    "emacs/eln-cache/"
+    (or (getenv "XDG_CACHE_HOME") (expand-file-name "~/.cache")))))
 
 ;; *scratch* comes up in `fundamental-mode' (see `initial-major-mode' in
 ;; early-init.el), which does no font locking, hence the mode switch.

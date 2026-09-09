@@ -10,9 +10,15 @@ no `use-package`.
 them**; replace them wholesale when updating minimal-emacs.d. Everything else
 is mine, hooked into the points upstream provides.
 
+The repository directory holds configuration only. `pre-early-init.el` moves
+`user-emacs-directory` to `$XDG_DATA_HOME/emacs/`, or `~/.local/share/emacs/`
+when that variable is unset. Packages, history, bookmarks, grammars, recovery
+files, and session data live there. Native compilation output lives under
+`$XDG_CACHE_HOME/emacs/`, or `~/.cache/emacs/` when that variable is unset.
+
 | File | Role |
 |------|------|
-| `pre-early-init.el` | Puts `configs/` on `load-path`; reports startup time into `*scratch*` |
+| `pre-early-init.el` | Separates runtime state, sets `load-path`, and reports startup time |
 | `pre-init.el` | The package manifest, read before `package-initialize` |
 | `post-init.el` | Installs what is missing, loads `custom-file`, requires the modules |
 | `configs/rc-*.el` | The actual configuration, one file per concern |

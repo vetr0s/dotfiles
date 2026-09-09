@@ -11,6 +11,8 @@
 
 ;;; Code:
 
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+
 ;; Install what this machine is missing.
 (package-install-selected-packages :no-confirm)
 

@@ -2,65 +2,6 @@
 *.elc
 *.eln
 
-# Emacs package state, written as .eld; none of it is config
-*.eld
-
-# Claude Code's per-machine overrides; the shared settings.json is tracked
+# Local tool overrides
 .claude/settings.local.json
-
-# Other
-elpaca/
-custom.el
-recentf.eld
-history
-.last-package-update-day
-places
-
-# Package directories (managed by package.el)
-elpa/
-
-# Native compilation cache
-eln-cache/
-
-# Compiled tree-sitter grammars, built per machine by the rc-*-install commands
-tree-sitter/
-
-# Backup and auto-save files
-*~
-\#*\#
-.\#*
-auto-save-list/
-backup/
-
-# Session and history files
-saveplace
-savehist
-recentf
-bookmarks
-eshell/history
-transient/
-
-# Custom file (optional - uncomment if you want to track it)
-# custom.el
-
-# Misc caches and state
-.cache/
-url/
-network-security.data
-projectile-bookmarks.eld
-projectile.cache
-tramp
-srecode-map.el
-semanticdb/
-undo-fu-session/
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# Org mode
-*.org~
-.org-id-locations
-
-# Local config (user-specific overrides)
 local.el
