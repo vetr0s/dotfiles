@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# odinfmt is the Odin formatter both editors call. It is not packaged anywhere
-# and is an ordinary Odin program, so the compiler is the only prerequisite.
-# It lives in the ols tree. Re-running updates the checkout.
+# ols is the Odin language server and odinfmt is the formatter both editors
+# call. Neither is packaged anywhere, both are ordinary Odin programs living in
+# one checkout, so the compiler is the only prerequisite. Re-running updates it.
 set -e
 
 SRC_DIR="${OLS_SRC_DIR:-$HOME/source/third_party/ols}"
@@ -19,13 +19,15 @@ else
   git clone https://github.com/DanielGavin/ols "$SRC_DIR"
 fi
 
-# The script writes its binary into the checkout root.
+# Both scripts write their binary into the checkout root.
 cd "$SRC_DIR"
+./build.sh
 ./odinfmt.sh
 
 # Symlinked rather than copied, so a later run of this script updates what is
 # on PATH without touching BIN_DIR again.
 mkdir -p "$BIN_DIR"
+ln -sf "$SRC_DIR/ols" "$BIN_DIR/ols"
 ln -sf "$SRC_DIR/odinfmt" "$BIN_DIR/odinfmt"
 
-echo "odinfmt linked into $BIN_DIR"
+echo "ols and odinfmt linked into $BIN_DIR"

@@ -73,14 +73,14 @@ These are separate from deployment:
 
 ```sh
 bash util/scripts/tags.sh [project]
-bash util/scripts/install-odinfmt.sh
+bash util/scripts/install-ols.sh
 bash util/scripts/install-vimplug.sh
 bash macos/scripts/install-bash.sh
 bash macos/scripts/make-emacsclient-app.sh
 ```
 
-`tags.sh` indexes a project for goto-definition, which is what both editors
-use now that neither runs a language server. It writes `tags` for Neovim, which
+`tags.sh` indexes a project for goto-definition. It is what Emacs uses, and
+what Neovim falls back to outside Odin. It writes `tags` for Neovim, which
 finds it through the default `./tags;`, and `.tags` for Emacs, which
 `rc-programming` visits when a buffer opens. Both come from one universal-ctags
 run, so the two editors jump to the same place. C, C++, Go and Python are its
@@ -96,9 +96,10 @@ bash linux/scripts/check-packages.sh
 Zenbones Brainy is a manual machine preference. Arch installs the Nerd Font
 symbols used by Waybar through the package manifest.
 
-`install-odinfmt.sh` builds `odinfmt` from source, since it is not packaged.
-It needs the `odin` compiler and nothing else. The checkout goes to
-`~/source/third_party/ols` and the binary is symlinked into `~/.local/bin`.
-Override with `OLS_SRC_DIR` and `OLS_BIN_DIR`. Emacs and Neovim both skip Odin
-formatting when `odinfmt` is not on `PATH`, so this is only needed on a machine
+`install-ols.sh` builds the Odin language server and `odinfmt` from source,
+since neither is packaged. They share one checkout and need the `odin` compiler
+and nothing else. The checkout goes to `~/source/third_party/ols` and both
+binaries are symlinked into `~/.local/bin`. Override with `OLS_SRC_DIR` and
+`OLS_BIN_DIR`. Neovim enables `ols` only when it is on `PATH`, and both editors
+skip Odin formatting without `odinfmt`, so this is only needed on a machine
 where I write Odin.

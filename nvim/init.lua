@@ -226,6 +226,54 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- =====================
+-- LSP
+-- =====================
+-- Server definitions live in lsp/, one file per server, which vim.lsp.enable
+-- reads off the runtimepath by name. Enabling is guarded so a machine without
+-- the binary gets the buffer it would have had before, the way the Odin
+-- ftplugin skips formatting when odinfmt is missing.
+if vim.fn.executable("ols") == 1 then
+  vim.lsp.enable("ols")
+end
+
+-- No keymaps: Neovim binds the verbs itself. K hovers, grn renames, gra acts,
+-- grr lists references, gO lists symbols, and an attached client sets
+-- 'tagfunc', so <C-]> asks the server and falls back to the ctags index.
+
+-- Only the line the cursor is on gets its text, which keeps a wide diagnostic
+-- from covering the code beside it. The rest stay signs in the gutter.
+vim.diagnostic.config({
+  severity_sort = true,
+  virtual_text = { current_line = true },
+})
+
+-- menuone keeps the menu up for a single match, so the popup documentation is
+-- still shown; noselect leaves the first item uninserted until I pick it.
+vim.opt.completeopt = { "menuone", "noselect", "popup" }
+
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("rc_lsp", { clear = true }),
+  desc = "Completion from the server, triggered as I type",
+  callback = function(ev)
+    local client = vim.lsp.get_client_by_id(ev.data.client_id)
+    if not client or not client:supports_method("textDocument/completion") then
+      return
+    end
+    -- enable() is what lets <C-y> apply an item's edits and what answers the
+    -- 'omnifunc' an attached client sets. Triggering is left to 'autocomplete'
+    -- rather than its own autotrigger, which fires only on the server's
+    -- trigger characters: a menu closed by a backspace would then stay shut
+    -- until the "." was retyped.
+    vim.lsp.completion.enable(true, client.id, ev.buf)
+
+    -- Buffer local, so a buffer with no server keeps typing to itself. The
+    -- server comes first in 'complete' because it gets the longest time slice.
+    vim.bo[ev.buf].autocomplete = true
+    vim.bo[ev.buf].complete = "o,."
+  end,
+})
+
+-- =====================
 -- UI / Theme
 -- =====================
 vim.opt.background = "dark"
