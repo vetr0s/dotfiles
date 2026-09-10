@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dotfiles final repository audit</title>
+<style>
+/* ============================================================
+   Standard HTML house style for plans, audits, and design docs.
+   Deliberately project-agnostic: this never adopts a project's theme.
+   Plain document on a plain background. Legibility over decoration.
+   ============================================================ */
+
+:root {
+  --bg:        #fbfbf9;
+  --fg:        #1a1a1a;
+  --fg-muted:  #5c5c5c;
+  --rule:      #d4d4cf;
+  --surface:   #f0f0ec;
+  --link:      #0b4fa8;
+  --visited:   #6b3fa0;
+  --accent:    #8a5a00;
+  --good:      #1c6b2e;
+  --bad:       #a11b1b;
+  --measure:   72em;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:       #101010;
+    --fg:       #e6e6e3;
+    --fg-muted: #9a9a95;
+    --rule:     #3a3a3a;
+    --surface:  #1c1c1c;
+    --link:     #89a6ff;
+    --visited:  #d98cff;
+    --accent:   #e0a33a;
+    --good:     #52c96a;
+    --bad:      #ff6b52;
+  }
+}
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--fg);
+  background: var(--bg);
+  margin: 0;
+  padding: 2.5rem 1.25rem 6rem;
+}
+
+/* Left-justified, not centered: the document hugs the left gutter and simply
+   stops at the measure. */
+main, .doc {
+  max-width: var(--measure);
+  margin: 0;
+}
+
+/* --- headings ------------------------------------------------ */
+
+h1, h2, h3, h4 {
+  line-height: 1.25;
+  font-weight: 600;
+  margin: 2.2em 0 0.6em;
+}
+h1 {
+  font-size: 1.9rem;
+  margin-top: 0;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--rule);
+}
+h2 { font-size: 1.35rem; }
+h3 { font-size: 1.1rem; }
+h4 { font-size: 1rem; color: var(--fg-muted); }
+
+/* Byline directly under the h1: date, repo, commit, author. */
+.meta {
+  color: var(--fg-muted);
+  font-size: 0.875rem;
+  margin: -0.2em 0 2.5em;
+}
+.meta > * + *::before { content: " · "; }
+
+/* --- prose --------------------------------------------------- */
+
+p, ul, ol, dl, table, pre, blockquote { margin: 0 0 1.1em; }
+
+a          { color: var(--link); }
+a:visited  { color: var(--visited); }
+
+strong { font-weight: 600; }
+
+small, .muted { color: var(--fg-muted); font-size: 0.875rem; }
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  margin: 2.5em 0;
+}
+
+blockquote {
+  margin-left: 0;
+  padding: 0.1em 0 0.1em 1em;
+  border-left: 3px solid var(--rule);
+  color: var(--fg-muted);
+}
+
+ul, ol { padding-left: 1.4em; }
+li { margin: 0.25em 0; }
+li > ul, li > ol { margin: 0.25em 0; }
+
+/* --- code ---------------------------------------------------- */
+
+code, kbd, samp, .path {
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.875em;
+}
+
+code {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.1em 0.3em;
+}
+
+/* File paths and identifiers: mono, but no box. */
+.path { color: var(--fg-muted); }
+
+pre {
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  padding: 0.75em 0.9em;
+  overflow-x: auto;
+  line-height: 1.45;
+}
+pre code {
+  background: none;
+  border: 0;
+  padding: 0;
+  font-size: 0.8125rem;
+}
+
+/* --- tables -------------------------------------------------- */
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.9375rem;
+}
+th, td {
+  border: 1px solid var(--rule);
+  padding: 0.45em 0.7em;
+  text-align: left;
+  vertical-align: top;
+}
+th {
+  background: var(--surface);
+  font-weight: 600;
+}
+
+/* Wide tables scroll inside their own box; the page never scrolls sideways. */
+.scroll { overflow-x: auto; margin: 0 0 1.1em; }
+.scroll table { margin: 0; }
+
+/* --- callouts ------------------------------------------------ */
+
+.note, .warn, .ok {
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--fg-muted);
+  background: var(--surface);
+  padding: 0.7em 0.9em;
+  margin: 0 0 1.1em;
+}
+.note > :last-child, .warn > :last-child, .ok > :last-child { margin-bottom: 0; }
+.warn { border-left-color: var(--accent); }
+.ok   { border-left-color: var(--good); }
+
+.note-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-bottom: 0.3em;
+}
+
+/* --- status tags --------------------------------------------- */
+
+.tag {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.75rem;
+  border: 1px solid currentColor;
+  border-radius: 3px;
+  padding: 0.05em 0.4em;
+  white-space: nowrap;
+  color: var(--fg-muted);
+}
+.tag-good { color: var(--good); }
+.tag-warn { color: var(--accent); }
+.tag-bad  { color: var(--bad); }
+
+/* --- task lists ---------------------------------------------- */
+
+/* <ul class="tasks"> with <li data-state="done|wip|todo"> */
+ul.tasks { list-style: none; padding-left: 0; }
+ul.tasks li {
+  padding-left: 1.9em;
+  position: relative;
+  margin: 0.4em 0;
+}
+ul.tasks li::before {
+  position: absolute;
+  left: 0;
+  font-family: ui-monospace, Menlo, monospace;
+  color: var(--fg-muted);
+  content: "[ ]";
+}
+ul.tasks li[data-state="done"]::before { content: "[x]"; color: var(--good); }
+ul.tasks li[data-state="wip"]::before  { content: "[~]"; color: var(--accent); }
+ul.tasks li[data-state="done"] { color: var(--fg-muted); }
+
+/* --- definition list (decisions, key/value facts) ------------- */
+
+dl { display: grid; grid-template-columns: minmax(8rem, max-content) 1fr; gap: 0.4em 1.2em; }
+dt { font-weight: 600; }
+dd { margin: 0; }
+
+/* --- table of contents --------------------------------------- */
+
+/* <nav class="toc"> wrapping a nested <ol> or <ul> of in-page links. */
+.toc {
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  padding: 0.9em 1.1em;
+  margin: 0 0 2.2em;
+}
+.toc ol, .toc ul { list-style: none; padding-left: 0; margin: 0; }
+.toc li { margin: 0.15em 0; }
+.toc ol ol, .toc ul ul { padding-left: 1.1em; }
+.toc ol ol li, .toc ul ul li { font-size: 0.9375rem; }
+.toc a { text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+/* A long flat contents list reads better in columns once there is room. */
+@media (min-width: 52rem) {
+  .toc > ol, .toc > ul { columns: 2; column-gap: 2.5em; }
+  .toc > ol > li, .toc > ul > li { break-inside: avoid; }
+}
+
+/* Back-to-contents link at the foot of a section. */
+.backtotoc { font-size: 0.8125rem; color: var(--fg-muted); }
+
+/* --- footnotes / source trail -------------------------------- */
+
+.footer {
+  margin-top: 4rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule);
+  color: var(--fg-muted);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 34rem) {
+  body { font-size: 16px; padding: 1.5rem 1rem 4rem; }
+  dl { grid-template-columns: 1fr; gap: 0.15em; }
+  dd { margin-bottom: 0.6em; }
+}
+
+@media print {
+  :root { --bg: #fff; --fg: #000; }
+  body { font-size: 11pt; }
+  a { color: #000; }
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Dotfiles final repository audit</h1>
+<p class="meta"><span>2026-09-10</span><span>dotfiles @ 3ce2396</span><span>Final review</span></p>
+
+<div class="ok">
+  <span class="note-label">Outcome</span>
+  <p>The repository is clean and ready for new work. No open correctness, data safety, security, deployment, or documentation finding remains in the reviewed scope.</p>
+</div>
+
+<nav class="toc">
+  <ol>
+    <li><a href="#scope">Scope and method</a></li>
+    <li><a href="#changes">What changed</a></li>
+    <li><a href="#verification">Final verification</a></li>
+    <li><a href="#state">Live workstation state</a></li>
+    <li><a href="#commits">Milestone commits</a></li>
+    <li><a href="#boundaries">Verification boundaries</a></li>
+  </ol>
+</nav>
+
+<h2 id="scope">Scope and method</h2>
+<p>The final review covered all 78 files tracked at commit <code>3ce2396</code>. It inspected deployment, shell startup, Emacs, Neovim, Vim, terminal configuration, macOS integration, Linux integration, helper scripts, manifests, tests, notes, file modes, binary assets, ignored state, and Git integrity.</p>
+<p>Three independent sweeps covered editor behavior, shell and platform behavior, and repository structure. The main pass reproduced each reported defect before accepting a fix. It then reran the complete suite against the committed shape.</p>
+
+<h2 id="changes">What changed</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>Area</th><th>Result</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>Emacs state</td><td>Packages, history, recovery files, grammars, and native compilation output now live outside the checkout. The package lock covers the exact dependency closure. It rejects stale entries and changed install candidates before they write persistent state.</td><td><span class="tag tag-good">closed</span></td></tr>
+<tr><td>Editor correctness</td><td>Python environments stay buffer-local. Python files without a virtual environment load normally. C formatting reads current project settings. Odin roots agree across editors. Odin shell paths are quoted. Formatter failures are visible.</td><td><span class="tag tag-good">closed</span></td></tr>
+<tr><td>Editor dependencies</td><td>Emacs packages, Vim plugins, lazy.nvim, Neovim plugins, the Odin grammar, OLS, odinfmt, and the Odin compiler compatibility point have immutable revisions. Neovim now enables autopairs and its native Telescope sorter.</td><td><span class="tag tag-good">closed</span></td></tr>
+<tr><td>Deployment</td><td>The deployer validates manifest paths, preserves displaced files, restores them after link failure, and leaves correct links unchanged. Tests now execute real macOS and Linux deployment under an isolated home.</td><td><span class="tag tag-good">closed</span></td></tr>
+<tr><td>Shell and terminal</td><td>The current directory is absent from <code>PATH</code>. Homebrew universal-ctags wins over the Xcode program. Tmux reloads the deployed path and no longer parses unstable uptime text. Kitty uses a warning-free platform glob.</td><td><span class="tag tag-good">closed</span></td></tr>
+<tr><td>Platform services</td><td>Both service helpers wait for the Emacs socket. The macOS app builder and font installer replace files through staging. OLS builds in a temporary worktree and publishes its two binaries as one versioned unit.</td><td><span class="tag tag-good">closed</span></td></tr>
+<tr><td>Assets and licenses</td><td>Every font has an exact source URL, release, file hash, archive hash where applicable, license identifier, and included license text. Installed font bytes and modes match the repository.</td><td><span class="tag tag-good">closed</span></td></tr>
+<tr><td>Documentation</td><td>Requirements, paths, service behavior, package lock behavior, helper ownership, font updates, and platform boundaries now match the working configuration.</td><td><span class="tag tag-good">closed</span></td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="verification">Final verification</h2>
+<ul>
+  <li><code>tests/run.sh</code> passes. It runs nine Emacs tests, Vim startup, clean-XDG Neovim startup, OLS attachment, shell checks, and real isolated deployment.</li>
+  <li>Both macOS Bash 3.2 and Homebrew Bash 5.3 parse every shell file.</li>
+  <li>A real isolated tmux 3.7c server parses the config. Its status line and reload binding resolve correctly.</li>
+  <li>Kitty 0.48.2 parses the committed configuration.</li>
+  <li>Karabiner JSON, the launchd plist, AeroSpace TOML, and Git config parse.</li>
+  <li>Every tracked Emacs Lisp file passes <code>check-parens</code>.</li>
+  <li>Regenerating the 44-entry Emacs package lock produces no diff.</li>
+  <li>Every installed Vim and Neovim plugin revision matches its recorded pin.</li>
+  <li>Real universal-ctags generation produces both the vi and Emacs indexes. A forced second-index failure preserves both old indexes.</li>
+  <li>The OLS installer builds both programs from the pinned source with the pinned Odin compiler. The published live links resolve to the versioned pair.</li>
+  <li>All five installed fonts match their tracked bytes and have mode <code>0644</code>.</li>
+  <li>Both deployment dry runs pass. All current macOS deployment links resolve to this checkout.</li>
+  <li><code>git fsck --full</code> reports no corruption or garbage. The secret-pattern scan finds no credential material.</li>
+</ul>
+
+<h2 id="state">Live workstation state</h2>
+<dl>
+  <dt>Emacs daemon</dt><dd>Launchd reports it running. The live query returns daemon status, package preflight success, package lock success, and 44 locked packages.</dd>
+  <dt>Emacs runtime</dt><dd><span class="path">~/.local/share/emacs</span></dd>
+  <dt>Native compilation</dt><dd><span class="path">~/.cache/emacs/eln-cache</span></dd>
+  <dt>OLS binaries</dt><dd><span class="path">~/.local/bin/ols-revisions/110e63703db100e9cd5f381328bfde99fdb4b85f</span></dd>
+  <dt>Legacy backup</dt><dd><span class="path">~/.local/share/emacs/legacy-dotfiles-state-20260908</span>. It is 131 MB and remains recoverable.</dd>
+  <dt>Ignored checkout state</dt><dd>Only <span class="path">.emacs.d/.claude/settings.local.json</span> remains. It is an intentional local permission file. No editor log remains in the checkout.</dd>
+</dl>
+
+<h2 id="commits">Milestone commits</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>Commit</th><th>Milestone</th></tr></thead>
+<tbody>
+<tr><td><code>076b062</code></td><td>Add Odin language server support</td></tr>
+<tr><td><code>a834c2e</code></td><td>Record the repository audit baseline</td></tr>
+<tr><td><code>2e95b39</code></td><td>Move Emacs runtime state out of the checkout</td></tr>
+<tr><td><code>6b8b372</code></td><td>Fix project-local editor state</td></tr>
+<tr><td><code>a21c93f</code></td><td>Harden shell and platform setup</td></tr>
+<tr><td><code>c6e7874</code></td><td>Pin editor dependencies and add checks</td></tr>
+<tr><td><code>639883c</code></td><td>Make font replacement atomic</td></tr>
+<tr><td><code>3ce2396</code></td><td>Close final audit findings</td></tr>
+</tbody>
+</table>
+</div>
+
+<h2 id="boundaries">Verification boundaries</h2>
+<p>The macOS host cannot start the Linux systemd user service. Its unit, deployment path, and shell control flow passed static and isolated checks. AeroSpace was not running during the final pass, so its live semantic reload was unavailable. Its TOML parsed successfully. <code>shellcheck</code> and <code>shfmt</code> were not installed. Both supported Bash interpreters parsed every script.</p>
+<p>The Emacs lock prevents an archive from installing an unreviewed revision. Package archives may remove old builds. The lock detects that state but cannot restore an artifact the archive no longer serves. This is a declared limit of the current built-in <code>package.el</code> design.</p>
+
+<p class="footer">This report records the state after the closing code milestone. The report itself is the only subsequent repository change.</p>
+</main>
+</body>
+</html>
