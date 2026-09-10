@@ -279,95 +279,96 @@ dd { margin: 0; }
 </head>
 <body>
 <main>
-<h1>Dotfiles final repository audit</h1>
-<p class="meta"><span>2026-09-10</span><span>dotfiles @ 3ce2396</span><span>Final review</span></p>
+<h1>Dotfiles post-merge repository audit</h1>
+<p class="meta"><span>2026-09-10</span><span>dotfiles @ 662900b</span><span>Final review</span></p>
 
 <div class="ok">
   <span class="note-label">Outcome</span>
-  <p>The repository is clean and ready for new work. No open correctness, data safety, security, deployment, or documentation finding remains in the reviewed scope.</p>
+  <p>The rebased repository is clean and ready for new work. No open correctness, security, deployment, or documentation finding remains in the verified scope.</p>
 </div>
 
 <nav class="toc">
   <ol>
     <li><a href="#scope">Scope and method</a></li>
-    <li><a href="#changes">What changed</a></li>
-    <li><a href="#verification">Final verification</a></li>
-    <li><a href="#state">Live workstation state</a></li>
+    <li><a href="#merge">Merge reconciliation</a></li>
+    <li><a href="#state">Current state</a></li>
+    <li><a href="#verification">Verification</a></li>
     <li><a href="#commits">Milestone commits</a></li>
     <li><a href="#boundaries">Verification boundaries</a></li>
   </ol>
 </nav>
 
 <h2 id="scope">Scope and method</h2>
-<p>The final review covered all 78 files tracked at commit <code>3ce2396</code>. It inspected deployment, shell startup, Emacs, Neovim, Vim, terminal configuration, macOS integration, Linux integration, helper scripts, manifests, tests, notes, file modes, binary assets, ignored state, and Git integrity.</p>
-<p>Three independent sweeps covered editor behavior, shell and platform behavior, and repository structure. The main pass reproduced each reported defect before accepting a fix. It then reran the complete suite against the committed shape.</p>
+<p>The review covered all 80 files tracked at commit <code>662900b</code>. It covered deployment, shell startup, Emacs, Neovim, Vim, terminal configuration, macOS integration, Arch Linux integration, helper scripts, package manifests, tests, historical notes, file modes, ignored state, and Git integrity.</p>
+<p>Separate sweeps reviewed editors, shell and platform behavior, and repository structure. Each accepted defect received a failing regression check before its fix. The final pass inspected the combined tree after the remote changes and local milestones were rebased together.</p>
 
-<h2 id="changes">What changed</h2>
+<h2 id="merge">Merge reconciliation</h2>
 <div class="scroll">
 <table>
-<thead><tr><th>Area</th><th>Result</th><th>Status</th></tr></thead>
+<thead><tr><th>Area</th><th>Resolution</th><th>Status</th></tr></thead>
 <tbody>
-<tr><td>Emacs state</td><td>Packages, history, recovery files, grammars, and native compilation output now live outside the checkout. The package lock covers the exact dependency closure. It rejects stale entries and changed install candidates before they write persistent state.</td><td><span class="tag tag-good">closed</span></td></tr>
-<tr><td>Editor correctness</td><td>Python environments stay buffer-local. Python files without a virtual environment load normally. C formatting reads current project settings. Odin roots agree across editors. Odin shell paths are quoted. Formatter failures are visible.</td><td><span class="tag tag-good">closed</span></td></tr>
-<tr><td>Editor dependencies</td><td>Emacs packages, Vim plugins, lazy.nvim, Neovim plugins, the Odin grammar, OLS, odinfmt, and the Odin compiler compatibility point have immutable revisions. Neovim now enables autopairs and its native Telescope sorter.</td><td><span class="tag tag-good">closed</span></td></tr>
-<tr><td>Deployment</td><td>The deployer validates manifest paths, preserves displaced files, restores them after link failure, and leaves correct links unchanged. Tests now execute real macOS and Linux deployment under an isolated home.</td><td><span class="tag tag-good">closed</span></td></tr>
-<tr><td>Shell and terminal</td><td>The current directory is absent from <code>PATH</code>. Homebrew universal-ctags wins over the Xcode program. Tmux reloads the deployed path and no longer parses unstable uptime text. Kitty uses a warning-free platform glob.</td><td><span class="tag tag-good">closed</span></td></tr>
-<tr><td>Platform services</td><td>Both service helpers wait for the Emacs socket. The macOS app builder and font installer replace files through staging. OLS builds in a temporary worktree and publishes its two binaries as one versioned unit.</td><td><span class="tag tag-good">closed</span></td></tr>
-<tr><td>Assets and licenses</td><td>Every font has an exact source URL, release, file hash, archive hash where applicable, license identifier, and included license text. Installed font bytes and modes match the repository.</td><td><span class="tag tag-good">closed</span></td></tr>
-<tr><td>Documentation</td><td>Requirements, paths, service behavior, package lock behavior, helper ownership, font updates, and platform boundaries now match the working configuration.</td><td><span class="tag tag-good">closed</span></td></tr>
+<tr><td>Git history</td><td>The local milestones were rebased onto remote commit <code>f429ab4</code>. The remote Arch, Hyprland, Waybar, and Dunst work remains intact. The obsolete tracked font layer remains removed.</td><td><span class="tag tag-good">closed</span></td></tr>
+<tr><td>Platform ownership</td><td>Shared configuration stays in the repository root. macOS and Arch Linux own their services and packages through separate manifests. Linux now includes its Emacs user service.</td><td><span class="tag tag-good">closed</span></td></tr>
+<tr><td>Package contract</td><td>The Arch manifest now supplies <code>make</code>, <code>odin</code>, and <code>ttf-nerd-fonts-symbols-mono</code>. These packages match the build tools and font family named by the active configuration.</td><td><span class="tag tag-good">closed</span></td></tr>
+<tr><td>Documentation</td><td>The current guides now describe manual macOS fonts, the Arch symbol font, two ctags passes, the Kitty platform glob, and reusable OLS releases.</td><td><span class="tag tag-good">closed</span></td></tr>
 </tbody>
 </table>
 </div>
 
-<h2 id="verification">Final verification</h2>
-<ul>
-  <li><code>tests/run.sh</code> passes. It runs nine Emacs tests, Vim startup, clean-XDG Neovim startup, OLS attachment, shell checks, and real isolated deployment.</li>
-  <li>Both macOS Bash 3.2 and Homebrew Bash 5.3 parse every shell file.</li>
-  <li>A real isolated tmux 3.7c server parses the config. Its status line and reload binding resolve correctly.</li>
-  <li>Kitty 0.48.2 parses the committed configuration.</li>
-  <li>Karabiner JSON, the launchd plist, AeroSpace TOML, and Git config parse.</li>
-  <li>Every tracked Emacs Lisp file passes <code>check-parens</code>.</li>
-  <li>Regenerating the 44-entry Emacs package lock produces no diff.</li>
-  <li>Every installed Vim and Neovim plugin revision matches its recorded pin.</li>
-  <li>Real universal-ctags generation produces both the vi and Emacs indexes. A forced second-index failure preserves both old indexes.</li>
-  <li>The OLS installer builds both programs from the pinned source with the pinned Odin compiler. The published live links resolve to the versioned pair.</li>
-  <li>All five installed fonts match their tracked bytes and have mode <code>0644</code>.</li>
-  <li>Both deployment dry runs pass. All current macOS deployment links resolve to this checkout.</li>
-  <li><code>git fsck --full</code> reports no corruption or garbage. The secret-pattern scan finds no credential material.</li>
-</ul>
+<h2 id="state">Current state</h2>
+<div class="scroll">
+<table>
+<thead><tr><th>Area</th><th>Assessment</th><th>Status</th></tr></thead>
+<tbody>
+<tr><td>Deployment</td><td>The manifest deployer validates relative paths. It backs up displaced files. It restores a backup after link failure. Repeated deployment leaves correct links alone.</td><td><span class="tag tag-good">solid</span></td></tr>
+<tr><td>Emacs</td><td>Runtime state lives outside the checkout. The package lock covers the installed dependency closure. It rejects stale, changed, missing, and duplicate entries. Python buffers rebuild their environment from global defaults before selecting a project virtual environment.</td><td><span class="tag tag-good">solid</span></td></tr>
+<tr><td>Neovim and Vim</td><td>Plugin revisions are locked. Neovim uses its deployed configuration path exactly once. Its <code>after</code> directory also appears once. The native Telescope sorter remains optional when its local build is unavailable.</td><td><span class="tag tag-good">solid</span></td></tr>
+<tr><td>Odin tooling</td><td>OLS releases are keyed by the OLS source revision and Odin compiler revision. Each release records both pins. A complete matching release activates without Git or compilation. A partial or mismatched release fails visibly.</td><td><span class="tag tag-good">solid</span></td></tr>
+<tr><td>Shell and terminal</td><td>PATH construction excludes the current directory. Universal ctags takes precedence over the Xcode program. Tmux reloads the deployed file. Kitty loads the platform file through a warning-free glob.</td><td><span class="tag tag-good">solid</span></td></tr>
+<tr><td>Repository hygiene</td><td>The tree contains no conflict marker, credential pattern, broken tracked link, generated log, or unexpected file mode. The only ignored file is the intentional local agent permission file at <span class="path">.emacs.d/.claude/settings.local.json</span>.</td><td><span class="tag tag-good">solid</span></td></tr>
+</tbody>
+</table>
+</div>
 
-<h2 id="state">Live workstation state</h2>
-<dl>
-  <dt>Emacs daemon</dt><dd>Launchd reports it running. The live query returns daemon status, package preflight success, package lock success, and 44 locked packages.</dd>
-  <dt>Emacs runtime</dt><dd><span class="path">~/.local/share/emacs</span></dd>
-  <dt>Native compilation</dt><dd><span class="path">~/.cache/emacs/eln-cache</span></dd>
-  <dt>OLS binaries</dt><dd><span class="path">~/.local/bin/ols-revisions/110e63703db100e9cd5f381328bfde99fdb4b85f</span></dd>
-  <dt>Legacy backup</dt><dd><span class="path">~/.local/share/emacs/legacy-dotfiles-state-20260908</span>. It is 131 MB and remains recoverable.</dd>
-  <dt>Ignored checkout state</dt><dd>Only <span class="path">.emacs.d/.claude/settings.local.json</span> remains. It is an intentional local permission file. No editor log remains in the checkout.</dd>
-</dl>
+<h2 id="verification">Verification</h2>
+<ul>
+  <li><code>tests/run.sh</code> passes. It covers isolated macOS and Linux deployment, shell helpers, Vim startup, deployed Neovim startup, and 11 Emacs tests.</li>
+  <li>The shell suite passes outside the sandbox with a real temporary tmux 3.7c server.</li>
+  <li>macOS Bash 3.2 and Homebrew Bash 5.3 parse every shell file.</li>
+  <li>Every tracked Emacs Lisp file passes <code>check-parens</code>.</li>
+  <li>Neovim loads through the deployed symlink with isolated data, state, and cache directories.</li>
+  <li>Kitty 0.48.2 parses the full configuration with no bad lines.</li>
+  <li>Karabiner JSON, Waybar JSONC, the launchd plist, Git config, and the Hyprland Lua file parse.</li>
+  <li>A real OLS build uses source <code>110e6370</code> and Odin <code>dev-2026-09:a2fb372b7</code>. A second installer run reuses the resulting release.</li>
+  <li><code>git diff --check</code> passes. <code>git fsck --full</code> reports a valid object database. Unreachable recovery objects from the rebase remain available until normal Git maintenance prunes them.</li>
+  <li>The tracked tree contains 80 files. All executable bits belong to scripts.</li>
+</ul>
 
 <h2 id="commits">Milestone commits</h2>
 <div class="scroll">
 <table>
 <thead><tr><th>Commit</th><th>Milestone</th></tr></thead>
 <tbody>
-<tr><td><code>076b062</code></td><td>Add Odin language server support</td></tr>
-<tr><td><code>a834c2e</code></td><td>Record the repository audit baseline</td></tr>
-<tr><td><code>2e95b39</code></td><td>Move Emacs runtime state out of the checkout</td></tr>
-<tr><td><code>6b8b372</code></td><td>Fix project-local editor state</td></tr>
-<tr><td><code>a21c93f</code></td><td>Harden shell and platform setup</td></tr>
-<tr><td><code>c6e7874</code></td><td>Pin editor dependencies and add checks</td></tr>
-<tr><td><code>639883c</code></td><td>Make font replacement atomic</td></tr>
-<tr><td><code>3ce2396</code></td><td>Close final audit findings</td></tr>
+<tr><td><code>f429ab4</code></td><td>Remote base with the current Waybar work</td></tr>
+<tr><td><code>7dd0fcf</code></td><td>Add Odin language server support</td></tr>
+<tr><td><code>f504ed3</code></td><td>Record the repository audit baseline</td></tr>
+<tr><td><code>b4817ac</code></td><td>Move Emacs runtime state out of the checkout</td></tr>
+<tr><td><code>6f81b8c</code></td><td>Fix project-local editor state</td></tr>
+<tr><td><code>f76a1c2</code></td><td>Harden shell and platform setup</td></tr>
+<tr><td><code>0586607</code></td><td>Pin editor dependencies and add checks</td></tr>
+<tr><td><code>218770f</code></td><td>Close the original final audit findings</td></tr>
+<tr><td><code>a89fd1f</code></td><td>Record the original final audit</td></tr>
+<tr><td><code>662900b</code></td><td>Close post-merge audit findings</td></tr>
 </tbody>
 </table>
 </div>
 
 <h2 id="boundaries">Verification boundaries</h2>
-<p>The macOS host cannot start the Linux systemd user service. Its unit, deployment path, and shell control flow passed static and isolated checks. AeroSpace was not running during the final pass, so its live semantic reload was unavailable. Its TOML parsed successfully. <code>shellcheck</code> and <code>shfmt</code> were not installed. Both supported Bash interpreters parsed every script.</p>
-<p>The Emacs lock prevents an archive from installing an unreviewed revision. Package archives may remove old builds. The lock detects that state but cannot restore an artifact the archive no longer serves. This is a declared limit of the current built-in <code>package.el</code> design.</p>
+<p>This macOS host cannot start Hyprland, Waybar, Dunst, or the Linux systemd user service. Their syntax, deployment paths, package names, and shell control flow passed the available checks. Live desktop behavior still requires the Arch host.</p>
+<p>The AeroSpace server was not running. Its live reload was unavailable. The helper failure path remains covered by the shell suite. <code>shellcheck</code> and <code>shfmt</code> were not installed. Both supported Bash interpreters parsed every script.</p>
+<p>The Emacs package lock rejects an unreviewed archive revision. It cannot restore a revision that an archive no longer serves. This is a limit of the current built-in <code>package.el</code> design.</p>
 
-<p class="footer">This report records the state after the closing code milestone. The report itself is the only subsequent repository change.</p>
+<p class="footer">This report records the committed tree after the closing code milestone. The report itself is the only subsequent repository change.</p>
 </main>
 </body>
 </html>
