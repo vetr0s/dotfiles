@@ -9,6 +9,10 @@
 -- Must precede the mappings and lazy.nvim, which reads it at setup.
 vim.g.mapleader = " "
 
+local init_source = debug.getinfo(1, "S").source:sub(2)
+local config_dir = vim.fs.dirname(vim.uv.fs_realpath(init_source) or init_source)
+vim.cmd.filetype("plugin indent on")
+
 vim.opt.clipboard = "unnamedplus"
 
 vim.opt.relativenumber = true
@@ -132,7 +136,7 @@ map("n", "<C-c><C-p>c", "<cmd>Lazy clean<cr>", { desc = "Plugins: clean" })
 -- =====================
 -- Plugins
 -- =====================
-local lockpath = vim.fn.stdpath("config") .. "/lazy-lock.json"
+local lockpath = config_dir .. "/lazy-lock.json"
 local lockfile = vim.json.decode(table.concat(vim.fn.readfile(lockpath), "\n"))
 local lazy_revision = lockfile["lazy.nvim"] and lockfile["lazy.nvim"].commit
 if not lazy_revision or #lazy_revision ~= 40
@@ -244,7 +248,11 @@ require("lazy").setup({
       lazy = false,
       build = ":TSUpdate",
     },
-  })
+  }, { lockfile = lockpath })
+
+vim.opt.runtimepath:prepend(config_dir)
+vim.opt.runtimepath:append(config_dir .. "/after")
+require("telescope").load_extension("fzf")
 
 -- =====================
 -- Tree-sitter
@@ -256,7 +264,7 @@ require("lazy").setup({
 -- it already had rather than losing highlighting altogether.
 local ts_filetypes = { "c", "cpp", "go", "lua", "odin", "python", "zig" }
 
-require("nvim-treesitter").install(ts_filetypes)
+require("nvim-treesitter").install(ts_filetypes):wait(300000)
 
 -- Prefer the native sorter when its optional build completed successfully.
 pcall(require("telescope").load_extension, "fzf")

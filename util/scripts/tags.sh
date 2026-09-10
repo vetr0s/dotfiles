@@ -59,7 +59,14 @@ COMMON=(
 )
 
 cd "$ROOT"
-ctags "${LANGDEFS[@]}" "${COMMON[@]}" -f tags .
-ctags "${LANGDEFS[@]}" "${COMMON[@]}" -e -f .tags .
+tags_temp="$(mktemp .tags.vi.XXXXXX)"
+etags_temp="$(mktemp .tags.emacs.XXXXXX)"
+trap 'rm -f "$tags_temp" "$etags_temp"' EXIT
+
+ctags --options=NONE "${LANGDEFS[@]}" "${COMMON[@]}" -f "$tags_temp" .
+ctags --options=NONE "${LANGDEFS[@]}" "${COMMON[@]}" -e -f "$etags_temp" .
+mv "$tags_temp" tags
+mv "$etags_temp" .tags
+trap - EXIT
 
 echo "wrote $(pwd)/tags and $(pwd)/.tags"

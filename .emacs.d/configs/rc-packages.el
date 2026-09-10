@@ -40,10 +40,9 @@
     (sort seen (lambda (left right)
                  (string< (symbol-name left) (symbol-name right))))))
 
-(defun rc-package--descriptor-lock (package)
-  "Return the lock entry for installed PACKAGE."
-  (let* ((descriptor (or (rc-package--installed-descriptor package)
-                         (error "Package is not installed: %s" package)))
+(defun rc-package--descriptor-entry (descriptor)
+  "Return the lock entry for DESCRIPTOR."
+  (let* ((package (package-desc-name descriptor))
          (version (package-version-join (package-desc-version descriptor)))
          (commit (alist-get :commit (package-desc-extras descriptor))))
     (unless (and (stringp commit)
@@ -51,16 +50,51 @@
       (error "Package has no immutable source revision: %s" package))
     (list package version commit)))
 
+(defun rc-package--descriptor-lock (package)
+  "Return the lock entry for installed PACKAGE."
+  (rc-package--descriptor-entry
+   (or (rc-package--installed-descriptor package)
+       (error "Package is not installed: %s" package))))
+
+(defun rc-package-verify-install-candidates ()
+  "Reject unreviewed package revisions before installing them."
+  (let ((missing (seq-filter (lambda (package)
+                               (not (package-installed-p package)))
+                             package-selected-packages)))
+    (when missing
+      (package--archives-initialize)
+      (let* ((candidates
+              (mapcar
+               (lambda (package)
+                 (or (cadr (assq package package-archive-contents))
+                     (error "Package is unavailable: %s" package)))
+               missing))
+             (transaction (package-compute-transaction candidates nil)))
+        (dolist (descriptor transaction)
+          (let* ((package (package-desc-name descriptor))
+                 (expected (or (assq package rc-package-lock)
+                               (error "Package is absent from package-lock.el: %s"
+                                      package)))
+                 (actual (rc-package--descriptor-entry descriptor)))
+            (unless (equal actual expected)
+              (error "Package candidate mismatch for %s: expected %S, found %S"
+                     package (cdr expected) (cdr actual))))))))
+  t)
+
 (defun rc-package-verify-lock ()
   "Verify the installed dependency closure against `rc-package-lock'."
-  (dolist (package (rc-package--dependency-closure))
-    (let* ((expected (or (assq package rc-package-lock)
-                         (error "Package is absent from package-lock.el: %s"
-                                package)))
-           (actual (rc-package--descriptor-lock package)))
-      (unless (equal actual expected)
-        (error "Package lock mismatch for %s: expected %S, found %S"
-               package (cdr expected) (cdr actual)))))
+  (let ((closure (rc-package--dependency-closure)))
+    (dolist (package closure)
+      (let* ((expected (or (assq package rc-package-lock)
+                           (error "Package is absent from package-lock.el: %s"
+                                  package)))
+             (actual (rc-package--descriptor-lock package)))
+        (unless (equal actual expected)
+          (error "Package lock mismatch for %s: expected %S, found %S"
+                 package (cdr expected) (cdr actual)))))
+    (dolist (entry rc-package-lock)
+      (unless (memq (car entry) closure)
+        (error "Package lock has a stale entry: %s" (car entry)))))
   t)
 
 (defun rc-package-write-lock ()

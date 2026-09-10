@@ -67,7 +67,7 @@
          (bin (and venv (expand-file-name "bin" venv))))
     (setq-local process-environment (copy-sequence process-environment))
     (setq-local exec-path (copy-sequence exec-path))
-    (when (file-directory-p bin)
+    (when (and bin (file-directory-p bin))
       (setq-local exec-path (cons bin (delete bin exec-path)))
       (setenv "PATH" (concat bin path-separator (or (getenv "PATH") "")))
       (setenv "VIRTUAL_ENV" venv)

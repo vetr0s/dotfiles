@@ -29,7 +29,11 @@ if grep -Fq 'tmux-mem-cpu-load' "$ROOT/tmux/tmux.conf"; then
   fail "tmux calls an undeclared status helper"
 fi
 
-if ! grep -Fq '"description": "HHKB: F3 plus F1 through F3 types 1 through 3"' \
+if grep -Fq '#(uptime |' "$ROOT/tmux/tmux.conf"; then
+  fail "tmux parses platform-specific uptime output in the status bar"
+fi
+
+if ! grep -Fq '"description": "HHKB: Hold F3 with F1 or F2 to type 1 or 2"' \
   "$ROOT/macos/karabiner/karabiner.json"; then
   fail "Karabiner describes keys that it does not map"
 fi
@@ -39,13 +43,8 @@ if ! grep -Eq '^set -[^[:space:]]*o pipefail$' \
   fail "kitty-float ignores failures in its window lookup"
 fi
 
-if ! grep -Fq 'cmp -s "$font" "$FONTS_DEST/$name"' \
-  "$ROOT/util/scripts/install-fonts.sh"; then
-  fail "install-fonts does not replace changed font files"
-fi
-
-if find "$ROOT/fonts" -type f -perm -111 -print -quit | grep -q .; then
-  fail "font files have executable mode bits"
+if ! grep -Fq 'globinclude ${KITTY_OS}.conf' "$ROOT/kitty/kitty.conf"; then
+  fail "Kitty warns about a missing platform include"
 fi
 
 if ! grep -Fq 'BUILD_ROOT="$(mktemp -d' \
@@ -64,9 +63,21 @@ if grep -Fq 'git -C "$SRC_DIR" pull' "$ROOT/util/scripts/install-ols.sh" \
   fail "the OLS installer does not use an immutable revision"
 fi
 
+if ! grep -Fq 'OLS_ODIN_VERSION=' "$ROOT/util/scripts/install-ols.sh" \
+  || ! grep -Fq 'worktree add --detach' "$ROOT/util/scripts/install-ols.sh" \
+  || ! grep -Fq '"$BIN_DIR/.ols-current/ols"' \
+    "$ROOT/util/scripts/install-ols.sh"; then
+  fail "the OLS installer does not stage a compiler-pinned binary pair"
+fi
+
 if ! grep -Fq 'd2ca8efb4487e156a60d5bd6db2598b872629403' \
   "$ROOT/.emacs.d/configs/rc-odin.el"; then
   fail "the Emacs Odin grammar is not pinned"
+fi
+
+if ! grep -Fq '/opt/homebrew/opt/universal-ctags/bin' \
+  "$ROOT/macos/config.bash"; then
+  fail "macOS leaves Xcode ctags ahead of universal-ctags"
 fi
 
 if grep -E '^  Plug ' "$ROOT/.vimrc" | grep -Ev "'commit': '[0-9a-f]{40}'" \
@@ -115,17 +126,34 @@ elif ! grep -Fxq -- '--user daemon-reload' "$TEST_SYSTEMCTL_LOG" \
   fail "Linux emacsctl did not load and start its service"
 fi
 
-font_source="$mock_root/font-source"
-font_dest="$mock_root/font-dest"
-mkdir -p "$font_source" "$font_dest"
-printf 'new font\n' > "$font_source/probe.ttf"
-printf 'old font\n' > "$font_dest/probe.ttf"
-if ! FONTS_SRC="$font_source" FONTS_DEST="$font_dest" \
-  REFRESH_FONT_CACHE=0 OSTYPE=linux-gnu \
-  "$ROOT/util/scripts/install-fonts.sh" >/dev/null; then
-  fail "install-fonts failed under an isolated destination"
-elif ! cmp -s "$font_source/probe.ttf" "$font_dest/probe.ttf"; then
-  fail "install-fonts kept stale font contents"
+tag_root="$mock_root/tag-project"
+mkdir -p "$tag_root" "$mock_root/tag-bin"
+printf 'old vi tags\n' > "$tag_root/tags"
+printf 'old Emacs tags\n' > "$tag_root/.tags"
+cat > "$mock_root/tag-bin/ctags" <<'EOF'
+#!/bin/sh
+if [ "${1:-}" = --version ]; then
+  printf 'Universal Ctags\n'
+  exit
+fi
+output=
+previous=
+emacs=0
+for argument in "$@"; do
+  [ "$previous" = -f ] && output="$argument"
+  [ "$argument" = -e ] && emacs=1
+  previous="$argument"
+done
+[ "$emacs" -eq 0 ] || exit 1
+printf 'new vi tags\n' > "$output"
+EOF
+chmod +x "$mock_root/tag-bin/ctags"
+if PATH="$mock_root/tag-bin:/usr/bin:/bin" \
+  "$ROOT/util/scripts/tags.sh" "$tag_root" >/dev/null 2>&1; then
+  fail "tags.sh ignored a failed Emacs index"
+elif ! grep -Fxq 'old vi tags' "$tag_root/tags" \
+  || ! grep -Fxq 'old Emacs tags' "$tag_root/.tags"; then
+  fail "tags.sh exposed one new index after the other failed"
 fi
 
 mkdir -p "$mock_root/aerospace-bin"

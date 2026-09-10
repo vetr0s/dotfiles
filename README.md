@@ -11,7 +11,8 @@ prints the command to install them. The macOS side has a small optional
 
 ## Requirements
 
-Deployment needs Git and Bash. Neovim configuration requires Neovim 0.12 or
+Deployment needs Git and Bash. The editor configurations require Emacs 31 or
+newer and Neovim 0.12 or newer. The tmux configuration requires tmux 3.1 or
 newer. Optional editor and platform tools are listed in the platform guides.
 
 ## Deploy
@@ -68,6 +69,7 @@ The repository also carries my Git configuration and C formatting rules.
 | `bashrc`, `bash_profile`, `config.bash` | Shell configuration |
 | `kitty/`, `tmux/` | Terminal configuration |
 | `gitconfig`, `clang-format` | Tool configuration |
+| `LICENSES/` | Third-party license texts |
 | `macos/` | Homebrew, launchd, AeroSpace, and Karabiner |
 | `linux/` | Arch packages, Hyprland, Waybar, Dunst, and Linux shell integration |
 | `util/links.tsv` | Shared deployment manifest |
@@ -113,12 +115,14 @@ Zenbones Brainy is a manual machine preference. Arch installs the Nerd Font
 symbols used by Waybar through the package manifest.
 
 `install-ols.sh` builds the Odin language server and `odinfmt` from source.
-They need Git and the `odin` compiler. The script checks out the tested commit
-recorded in the script. The checkout goes to `~/source/third_party/ols` and
-both binaries are symlinked into `~/.local/bin`. Override the locations with
-`OLS_SRC_DIR` and `OLS_BIN_DIR`. Override `OLS_REVISION` to test an update
-before changing the recorded default. Neovim enables `ols` only when it is on
-`PATH`. Both editors skip Odin formatting when `odinfmt` is unavailable.
+They need Git and the `odin` compiler. The source checkout goes to
+`~/source/third_party/ols`. The script builds the tested commit in a temporary
+worktree. It publishes both binaries as one versioned unit under
+`~/.local/bin`. Override the locations with `OLS_SRC_DIR` and `OLS_BIN_DIR`.
+`OLS_REVISION` and `OLS_ODIN_VERSION` record the tested source and compiler
+revisions. Override both pins together when testing an upgrade. Neovim enables
+`ols` only when it is on `PATH`. Both editors skip Odin formatting when
+`odinfmt` is unavailable.
 
 ## Emacs daemon
 

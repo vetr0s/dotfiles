@@ -1,8 +1,9 @@
 # .emacs.d
 
-Emacs configuration built on [minimal-emacs.d](https://github.com/jamescherti/minimal-emacs.d)
-(v1.5.1), using the built-in `package.el`. No third-party package manager and
-no `use-package`.
+Emacs 31 or newer configuration built on
+[minimal-emacs.d](https://github.com/jamescherti/minimal-emacs.d) v1.5.1. It
+uses the built-in `package.el`. It has no third-party package manager and no
+`use-package`.
 
 ## Layout
 
@@ -52,7 +53,10 @@ from that lock.
 
 Packages come from GNU ELPA, NonGNU ELPA, MELPA, and MELPA Stable. Nothing is
 pulled directly from a repository. `package.el` installs missing packages.
-The lock prevents a changed archive build from being accepted silently.
+The lock checks every candidate before installation. A changed archive build
+fails without replacing installed packages. Archives do not retain every old
+build. The lock detects a missing revision but cannot fetch one that its
+archive no longer serves.
 
 Org is deliberately **not** in the manifest: Emacs ships a current one, and a
 second copy from ELPA races the built-in for load order.

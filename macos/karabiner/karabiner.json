@@ -4,7 +4,7 @@
             "complex_modifications": {
                 "rules": [
                     {
-                        "description": "HHKB: F3 plus F1 through F3 types 1 through 3",
+                        "description": "HHKB: Hold F3 with F1 or F2 to type 1 or 2",
                         "manipulators": [
                             {
                                 "from": {
@@ -17,9 +17,9 @@
                                             "name": "f3_held",
                                             "value": 1
                                         }
-                                    },
-                                    { "key_code": "f3" }
+                                    }
                                 ],
+                                "to_if_alone": [{ "key_code": "f3" }],
                                 "to_after_key_up": [
                                     {
                                         "set_variable": {
@@ -52,18 +52,6 @@
                                 ],
                                 "from": { "key_code": "f2" },
                                 "to": [{ "key_code": "2" }],
-                                "type": "basic"
-                            },
-                            {
-                                "conditions": [
-                                    {
-                                        "name": "f3_held",
-                                        "type": "variable_if",
-                                        "value": 1
-                                    }
-                                ],
-                                "from": { "key_code": "f3" },
-                                "to": [{ "key_code": "3" }],
                                 "type": "basic"
                             }
                         ]

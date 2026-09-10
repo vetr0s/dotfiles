@@ -5,8 +5,9 @@ Hyprlauncher, Waybar, Dunst, PipeWire, NetworkManager, Kitty, and Dolphin.
 
 ## Requirements
 
-Install Git and Bash before deployment. Install Emacs with `emacsclient` when
-using the service. Install Neovim 0.12 or newer for the Neovim configuration.
+Install Git and Bash before deployment. Install Emacs 31 or newer with
+`emacsclient` when using the service. Install Neovim 0.12 or newer for the
+Neovim configuration. Tmux must be 3.1 or newer.
 
 ## Packages
 

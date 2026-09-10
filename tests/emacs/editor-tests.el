@@ -1,6 +1,7 @@
 ;;; editor-tests.el --- Editor regression tests -*- lexical-binding: t; -*-
 
 (require 'ert)
+(require 'cl-lib)
 (require 'python)
 (require 'rc-cc)
 (require 'rc-odin)
@@ -16,6 +17,7 @@
 (ert-deftest rc-package-lock-matches-installed-packages ()
   (should (require 'rc-packages nil t))
   (should (> (length (rc-package--dependency-closure)) 40))
+  (should (rc-package-verify-install-candidates))
   (rc-package-verify-lock))
 
 (ert-deftest rc-package-lock-rejects-a-different-revision ()
@@ -24,6 +26,40 @@
     (setf (caddr (assq 'vertico rc-package-lock))
           "0000000000000000000000000000000000000000")
     (should-error (rc-package-verify-lock))))
+
+(ert-deftest rc-package-lock-rejects-a-stale-entry ()
+  (require 'rc-packages)
+  (let ((rc-package-lock
+         (cons '(not-installed "1" "0000000000000000000000000000000000000000")
+               rc-package-lock)))
+    (should-error (rc-package-verify-lock))))
+
+(ert-deftest rc-package-lock-rejects-an-install-candidate ()
+  (require 'rc-packages)
+  (let* ((descriptor
+          (copy-package-desc (rc-package--installed-descriptor 'vertico)))
+         (extras (copy-tree (package-desc-extras descriptor)))
+         (package-selected-packages '(vertico))
+         (package-archive-contents `((vertico ,descriptor))))
+    (setf (alist-get :commit extras)
+          "0000000000000000000000000000000000000000")
+    (setf (package-desc-extras descriptor) extras)
+    (cl-letf (((symbol-function 'package-installed-p)
+               (lambda (&rest _) nil))
+              ((symbol-function 'package--archives-initialize) #'ignore)
+              ((symbol-function 'package-compute-transaction)
+               (lambda (packages _requirements &optional _seen) packages)))
+      (should-error (rc-package-verify-install-candidates)))))
+
+(ert-deftest rc-programming-allows-python-without-a-venv ()
+  (let ((root (make-temp-file "rc-python-no-venv" t)))
+    (unwind-protect
+        (with-temp-buffer
+          (setq default-directory (file-name-as-directory root))
+          (rc-programming-activate-venv)
+          (should (local-variable-p 'process-environment))
+          (should (local-variable-p 'exec-path)))
+      (delete-directory root t))))
 
 (ert-deftest rc-programming-keeps-venvs-buffer-local ()
   (let ((root-a (make-temp-file "rc-python-a" t))

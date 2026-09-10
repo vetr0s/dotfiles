@@ -44,7 +44,7 @@ local buffer_dir = vim.fn.expand("%:p:h")
 local root = vim.fs.root(0, { { ".git", "ols.json", "odinfmt.json" } }) or buffer_dir
 
 if vim.uv.fs_stat(root .. "/Makefile") then
-  vim.bo.makeprg = "make -C " .. vim.fn.fnameescape(root)
+  vim.bo.makeprg = "make -C " .. vim.fn.shellescape(root)
 else
   local src = root .. "/src"
   local package = (holds_odin(src) and src)
@@ -52,8 +52,8 @@ else
     or buffer_dir
   -- cd first: odin writes the binary into the process working directory, so
   -- without this :make drops it wherever Neovim happens to have been started.
-  vim.bo.makeprg = "cd " .. vim.fn.fnameescape(root) .. " && odin build "
-    .. vim.fn.fnameescape(package) .. " -vet -strict-style -debug"
+  vim.bo.makeprg = "cd " .. vim.fn.shellescape(root) .. " && odin build "
+    .. vim.fn.shellescape(package) .. " -vet -strict-style -debug"
 end
 
 -- Format on save, which is what apheleia does for Odin in Emacs. odinfmt reads
@@ -77,6 +77,11 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     -- A syntax error makes odinfmt exit non-zero. Keeping the buffer as typed
     -- beats replacing it with a diagnostic.
     if result.code ~= 0 or not result.stdout or result.stdout == "" then
+      local detail = vim.trim(result.stderr or "")
+      if detail == "" then
+        detail = "exit code " .. tostring(result.code)
+      end
+      vim.notify("odinfmt failed: " .. detail, vim.log.levels.ERROR)
       return
     end
     local formatted = vim.split(result.stdout:gsub("\n$", ""), "\n", { plain = true })

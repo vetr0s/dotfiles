@@ -15,7 +15,8 @@
 
 (require 'rc-packages)
 
-;; Install what this machine is missing, then reject unreviewed revisions.
+;; Reject changed archive builds before they can replace persistent state.
+(rc-package-verify-install-candidates)
 (package-install-selected-packages :no-confirm)
 (rc-package-verify-lock)
 

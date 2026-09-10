@@ -35,5 +35,8 @@ export LSCOLORS="GxFxBxdxCxDxdxabagacad"
 [ -d "/opt/homebrew/bin" ] \
   && export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
 
+[ -d "/opt/homebrew/opt/universal-ctags/bin" ] \
+  && export PATH="/opt/homebrew/opt/universal-ctags/bin:$PATH"
+
 [ -d "/Applications/Emacs.app/Contents/MacOS/bin" ] \
   && export PATH="/Applications/Emacs.app/Contents/MacOS/bin:$PATH"
