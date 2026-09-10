@@ -34,6 +34,12 @@
                rc-package-lock)))
     (should-error (rc-package-verify-lock))))
 
+(ert-deftest rc-package-lock-rejects-a-duplicate-entry ()
+  (require 'rc-packages)
+  (let ((rc-package-lock
+         (cons (copy-tree (car rc-package-lock)) rc-package-lock)))
+    (should-error (rc-package-verify-lock))))
+
 (ert-deftest rc-package-lock-rejects-an-install-candidate ()
   (require 'rc-packages)
   (let* ((descriptor
@@ -99,6 +105,30 @@
       (setq-default python-flymake-command old-command)
       (kill-buffer buffer-a)
       (kill-buffer buffer-b)
+      (delete-directory root-a t)
+      (delete-directory root-b t))))
+
+(ert-deftest rc-programming-clears-a-previous-project-venv ()
+  (let ((root-a (make-temp-file "rc-python-transition-a" t))
+        (root-b (make-temp-file "rc-python-transition-b" t)))
+    (unwind-protect
+        (with-temp-buffer
+          (make-directory (expand-file-name ".venv/bin" root-a) t)
+          (let ((ruff (expand-file-name ".venv/bin/ruff" root-a)))
+            (rc-test--write-file ruff "#!/bin/sh\nexit 0\n")
+            (set-file-modes ruff #o755))
+          (setq default-directory (file-name-as-directory root-a))
+          (rc-programming-activate-venv)
+          (should (equal (getenv "VIRTUAL_ENV")
+                         (expand-file-name ".venv" root-a)))
+          (should (equal (car python-flymake-command) "ruff"))
+          (setq default-directory (file-name-as-directory root-b))
+          (rc-programming-activate-venv)
+          (should-not (getenv "VIRTUAL_ENV"))
+          (should-not (member (expand-file-name ".venv/bin" root-a) exec-path))
+          (should-not python-shell-virtualenv-path)
+          (should-not python-shell-virtualenv-root)
+          (should-not (local-variable-p 'python-flymake-command)))
       (delete-directory root-a t)
       (delete-directory root-b t))))
 

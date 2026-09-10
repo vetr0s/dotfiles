@@ -8,10 +8,12 @@ official	emacs-wayland	native Wayland GUI editor and daemon
 official	tmux	remote terminal multiplexer
 official	kitty	Wayland terminal
 official	clang	clang-format and C tooling
+official	make	telescope native sorter build
 official	fzf	interactive selection
 official	ripgrep	project search
 official	ctags	project tag indexes
 official	tree-sitter-cli	Neovim parser builds
+official	odin	Odin compiler and OLS build
 official	aspell	Emacs spelling
 official	poppler	PDF support
 official	hyprland	Wayland compositor
@@ -38,4 +40,4 @@ official	brightnessctl	backlight keys
 official	playerctl	media keys
 official	pavucontrol	audio mixer
 official	procps-ng	process checks used by Hypridle
-official	ttf-nerd-fonts-symbols	Waybar and prompt symbols
+official	ttf-nerd-fonts-symbols-mono	Waybar and prompt symbols

@@ -20,6 +20,7 @@ bash linux/scripts/check-packages.sh
 The checker reports missing packages and prints the commands that would install
 them. Official packages use `pacman`. Future AUR entries use an existing `yay`
 installation. Every current package comes from an official Arch repository.
+The manifest includes Symbols Nerd Font Mono for the configured icons.
 
 ## Deploy
 

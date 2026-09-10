@@ -1,7 +1,30 @@
 local root = vim.fn.tempname()
 local ok, err = xpcall(function()
   assert(package.loaded["nvim-autopairs"], "nvim-autopairs was not configured")
-  assert(require("telescope").extensions.fzf, "Telescope fzf was not enabled")
+  if pcall(require, "fzf_lib") then
+    assert(require("telescope").extensions.fzf, "Telescope fzf was not enabled")
+  end
+
+  local config_real = assert(vim.uv.fs_realpath(vim.fn.stdpath("config")))
+  local config_hits = 0
+  local after_hits = 0
+  for _, path in ipairs(vim.opt.runtimepath:get()) do
+    local real = vim.uv.fs_realpath(path)
+    if real == config_real then
+      config_hits = config_hits + 1
+    elseif real == config_real .. "/after" then
+      after_hits = after_hits + 1
+    end
+  end
+  local runtimepaths = table.concat(vim.opt.runtimepath:get(), "\n")
+  assert(
+    config_hits == 1,
+    "Neovim config appears more than once on runtimepath:\n" .. runtimepaths
+  )
+  assert(
+    after_hits == 1,
+    "Neovim after directory appears more than once on runtimepath:\n" .. runtimepaths
+  )
 
   local nested = root .. "/nested;package"
   vim.fn.mkdir(root .. "/.git", "p")

@@ -47,6 +47,19 @@ if ! grep -Fq 'globinclude ${KITTY_OS}.conf' "$ROOT/kitty/kitty.conf"; then
   fail "Kitty warns about a missing platform include"
 fi
 
+if grep -Fq $'official\tttf-nerd-fonts-symbols\t' "$ROOT/linux/packages.tsv" \
+  || ! grep -Fq $'official\tttf-nerd-fonts-symbols-mono\t' \
+    "$ROOT/linux/packages.tsv"; then
+  fail "the Arch manifest installs the wrong Nerd Font symbol family"
+fi
+
+for package in make odin; do
+  if ! grep -Eq "^official[[:space:]]+$package[[:space:]]" \
+    "$ROOT/linux/packages.tsv"; then
+    fail "the Arch manifest omits $package"
+  fi
+done
+
 if ! grep -Fq 'BUILD_ROOT="$(mktemp -d' \
   "$ROOT/macos/scripts/make-emacsclient-app.sh"; then
   fail "the Emacsclient app is not built before replacement"
@@ -126,6 +139,30 @@ elif ! grep -Fxq -- '--user daemon-reload' "$TEST_SYSTEMCTL_LOG" \
   fail "Linux emacsctl did not load and start its service"
 fi
 
+ols_revision=110e63703db100e9cd5f381328bfde99fdb4b85f
+ols_odin_version=dev-2026-09:a2fb372b7
+ols_release="$mock_root/ols-bin/ols-revisions/${ols_revision}-dev-2026-09_a2fb372b7"
+mkdir -p "$ols_release" "$mock_root/ols-tools"
+printf '#!/bin/sh\nprintf "ols version dev-test-110e6370\\n"\n' \
+  > "$ols_release/ols"
+printf '#!/bin/sh\nexit 0\n' > "$ols_release/odinfmt"
+printf '%s\t%s\n' "$ols_revision" "$ols_odin_version" \
+  > "$ols_release/BUILD-PINS"
+printf '#!/bin/sh\nprintf "odin version %%s\\n" "$OLS_ODIN_VERSION"\n' \
+  > "$mock_root/ols-tools/odin"
+printf '#!/bin/sh\nexit 91\n' > "$mock_root/ols-tools/git"
+chmod +x "$ols_release/ols" "$ols_release/odinfmt" \
+  "$mock_root/ols-tools/odin" "$mock_root/ols-tools/git"
+if ! PATH="$mock_root/ols-tools:/usr/bin:/bin" \
+  OLS_SRC_DIR="$mock_root/unused-ols-source" \
+  OLS_BIN_DIR="$mock_root/ols-bin" \
+  OLS_REVISION="$ols_revision" OLS_ODIN_VERSION="$ols_odin_version" \
+  "$ROOT/util/scripts/install-ols.sh" >/dev/null 2>&1; then
+  fail "install-ols rebuilds an existing pinned release"
+elif [ "$(readlink "$mock_root/ols-bin/.ols-current")" != "$ols_release" ]; then
+  fail "install-ols did not activate the existing pinned release"
+fi
+
 tag_root="$mock_root/tag-project"
 mkdir -p "$tag_root" "$mock_root/tag-bin"
 printf 'old vi tags\n' > "$tag_root/tags"
@@ -199,9 +236,9 @@ if command -v tmux >/dev/null 2>&1; then
   if TMUX_TMPDIR="$tmux_tmp" tmux -L "$tmux_socket" \
     has-session 2>/dev/null; then
     reload="$(TMUX_TMPDIR="$tmux_tmp" tmux -L "$tmux_socket" \
-      list-keys -T prefix r)"
+      list-keys -T prefix)"
     case "$reload" in
-      *"source-file ~/.config/tmux/tmux.conf"*) ;;
+      *"source-file $HOME/.config/tmux/tmux.conf"*) ;;
       *) fail "the live tmux reload binding uses the wrong path" ;;
     esac
     TMUX_TMPDIR="$tmux_tmp" tmux -L "$tmux_socket" kill-server

@@ -100,10 +100,11 @@ bash macos/scripts/make-emacsclient-app.sh
 `tags.sh` indexes a project for goto-definition. It is what Emacs uses, and
 what Neovim falls back to outside Odin. It writes `tags` for Neovim, which
 finds it through the default `./tags;`, and `.tags` for Emacs, which
-`rc-programming` visits when a buffer opens. Both come from one universal-ctags
-run, so the two editors jump to the same place. C, C++, Go and Python are its
-own parsers; Odin and Zig are regex definitions in the script, since
-universal-ctags ships neither. Rerun it when the index goes stale.
+`rc-programming` visits when a buffer opens. One helper invocation runs
+universal-ctags twice to create both formats. The two editors use the same
+source index. C, C++, Go and Python use built-in parsers. Odin and Zig use
+regex definitions because universal-ctags ships neither. Rerun the helper when
+the index goes stale.
 
 On Arch Linux, report missing workstation packages with:
 
@@ -120,9 +121,10 @@ They need Git and the `odin` compiler. The source checkout goes to
 worktree. It publishes both binaries as one versioned unit under
 `~/.local/bin`. Override the locations with `OLS_SRC_DIR` and `OLS_BIN_DIR`.
 `OLS_REVISION` and `OLS_ODIN_VERSION` record the tested source and compiler
-revisions. Override both pins together when testing an upgrade. Neovim enables
-`ols` only when it is on `PATH`. Both editors skip Odin formatting when
-`odinfmt` is unavailable.
+revisions. The script reuses a complete release for the same pins. Remove that
+release directory to force a rebuild. Override both pins together when testing
+an upgrade. Neovim enables `ols` only when it is on `PATH`. Both editors skip
+Odin formatting when `odinfmt` is unavailable.
 
 ## Emacs daemon
 

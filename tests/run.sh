@@ -67,12 +67,13 @@ if command -v nvim >/dev/null 2>&1; then
   if [ -d "$nvim_data_home" ]; then
     cp -R "$nvim_data_home/." "$test_root/nvim-data/nvim/"
   fi
-  XDG_CONFIG_HOME="$test_root/nvim-config" \
+  XDG_CONFIG_HOME="$deployment_home/.config" \
     XDG_DATA_HOME="$test_root/nvim-data" \
     XDG_STATE_HOME="$test_root/nvim-state" \
     XDG_CACHE_HOME="$test_root/nvim-cache" \
     NVIM_LOG_FILE="$test_root/nvim.log" \
-    nvim --headless -u nvim/init.lua -i NONE -l tests/nvim/editor-tests.lua
+    nvim --headless -u "$deployment_home/.config/nvim/init.lua" -i NONE \
+      -l tests/nvim/editor-tests.lua
 else
   printf 'SKIP: nvim is unavailable\n'
 fi

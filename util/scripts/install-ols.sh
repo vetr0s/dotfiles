@@ -9,6 +9,48 @@ BIN_DIR="${OLS_BIN_DIR:-$HOME/.local/bin}"
 OLS_REVISION="${OLS_REVISION:-110e63703db100e9cd5f381328bfde99fdb4b85f}"
 OLS_ODIN_VERSION="${OLS_ODIN_VERSION:-dev-2026-09:a2fb372b7}"
 
+if [[ ! "$OLS_REVISION" =~ ^[0-9a-f]{40}$ ]]; then
+  echo "OLS_REVISION must be a 40-character lowercase Git revision." >&2
+  exit 1
+fi
+
+if [[ ! "$OLS_ODIN_VERSION" =~ ^[A-Za-z0-9._:+-]+$ ]]; then
+  echo "OLS_ODIN_VERSION contains an unsafe release path character." >&2
+  exit 1
+fi
+
+compiler_key="${OLS_ODIN_VERSION//:/_}"
+release_key="$OLS_REVISION-$compiler_key"
+release_root="$BIN_DIR/ols-revisions"
+release_dir="$release_root/$release_key"
+
+activate_release() {
+  ln -sfn "$release_dir" "$BIN_DIR/.ols-current"
+  ln -sfn "$BIN_DIR/.ols-current/ols" "$BIN_DIR/ols"
+  ln -sfn "$BIN_DIR/.ols-current/odinfmt" "$BIN_DIR/odinfmt"
+}
+
+mkdir -p "$release_root"
+if [ -d "$release_dir" ]; then
+  if [ ! -x "$release_dir/ols" ] || [ ! -x "$release_dir/odinfmt" ] \
+    || [ ! -f "$release_dir/BUILD-PINS" ]; then
+    echo "Existing OLS release is incomplete: $release_dir" >&2
+    exit 1
+  fi
+
+  IFS=$'\t' read -r release_revision release_odin_version \
+    < "$release_dir/BUILD-PINS"
+  if [ "$release_revision" != "$OLS_REVISION" ] \
+    || [ "$release_odin_version" != "$OLS_ODIN_VERSION" ]; then
+    echo "Existing OLS release has different build pins: $release_dir" >&2
+    exit 1
+  fi
+
+  activate_release
+  echo "ols and odinfmt linked into $BIN_DIR"
+  exit 0
+fi
+
 if ! command -v odin >/dev/null 2>&1; then
   echo "odin is not on PATH. Install the compiler first." >&2
   exit 1
@@ -36,8 +78,6 @@ fi
 
 build_parent="$(mktemp -d "$(dirname "$SRC_DIR")/.ols-build.XXXXXX")"
 build_root="$build_parent/source"
-release_root="$BIN_DIR/ols-revisions"
-release_dir="$release_root/$OLS_REVISION"
 release_stage=""
 cleanup() {
   git -C "$SRC_DIR" worktree remove --force "$build_root" >/dev/null 2>&1 || true
@@ -51,22 +91,15 @@ cd "$build_root"
 ./build.sh
 ./odinfmt.sh
 
-mkdir -p "$release_root"
-if [ ! -d "$release_dir" ]; then
-  release_stage="$(mktemp -d "$release_root/.${OLS_REVISION}.XXXXXX")"
-  cp "$build_root/ols" "$build_root/odinfmt" "$release_stage/"
-  chmod 0755 "$release_stage/ols" "$release_stage/odinfmt"
-  mv "$release_stage" "$release_dir"
-  release_stage=""
-elif ! cmp -s "$build_root/ols" "$release_dir/ols" \
-  || ! cmp -s "$build_root/odinfmt" "$release_dir/odinfmt"; then
-  echo "Existing binaries do not match the pinned build: $release_dir" >&2
-  exit 1
-fi
+release_stage="$(mktemp -d "$release_root/.${release_key}.XXXXXX")"
+cp "$build_root/ols" "$build_root/odinfmt" "$release_stage/"
+chmod 0755 "$release_stage/ols" "$release_stage/odinfmt"
+printf '%s\t%s\n' "$OLS_REVISION" "$OLS_ODIN_VERSION" \
+  > "$release_stage/BUILD-PINS"
+mv "$release_stage" "$release_dir"
+release_stage=""
 
-ln -sfn "$release_dir" "$BIN_DIR/.ols-current"
-ln -sfn "$BIN_DIR/.ols-current/ols" "$BIN_DIR/ols"
-ln -sfn "$BIN_DIR/.ols-current/odinfmt" "$BIN_DIR/odinfmt"
+activate_release
 
 git -C "$SRC_DIR" worktree remove --force "$build_root"
 rm -rf "$build_parent"

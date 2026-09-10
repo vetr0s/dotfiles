@@ -83,7 +83,12 @@
 
 (defun rc-package-verify-lock ()
   "Verify the installed dependency closure against `rc-package-lock'."
-  (let ((closure (rc-package--dependency-closure)))
+  (let ((closure (rc-package--dependency-closure))
+        (seen nil))
+    (dolist (entry rc-package-lock)
+      (when (memq (car entry) seen)
+        (error "Package lock has a duplicate entry: %s" (car entry)))
+      (push (car entry) seen))
     (dolist (package closure)
       (let* ((expected (or (assq package rc-package-lock)
                            (error "Package is absent from package-lock.el: %s"

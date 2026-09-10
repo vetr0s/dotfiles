@@ -62,11 +62,15 @@
 ;; other's interpreter or linter.
 (defun rc-programming-activate-venv ()
   "Use the current project's .venv for this Python buffer."
+  (setq-local process-environment
+              (copy-sequence (default-value 'process-environment)))
+  (setq-local exec-path (copy-sequence (default-value 'exec-path)))
+  (kill-local-variable 'python-shell-virtualenv-path)
+  (kill-local-variable 'python-shell-virtualenv-root)
+  (kill-local-variable 'python-flymake-command)
   (let* ((root (locate-dominating-file default-directory ".venv"))
          (venv (and root (expand-file-name ".venv" root)))
          (bin (and venv (expand-file-name "bin" venv))))
-    (setq-local process-environment (copy-sequence process-environment))
-    (setq-local exec-path (copy-sequence exec-path))
     (when (and bin (file-directory-p bin))
       (setq-local exec-path (cons bin (delete bin exec-path)))
       (setenv "PATH" (concat bin path-separator (or (getenv "PATH") "")))

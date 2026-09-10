@@ -9,8 +9,7 @@
 -- Must precede the mappings and lazy.nvim, which reads it at setup.
 vim.g.mapleader = " "
 
-local init_source = debug.getinfo(1, "S").source:sub(2)
-local config_dir = vim.fs.dirname(vim.uv.fs_realpath(init_source) or init_source)
+local config_dir = vim.fn.stdpath("config")
 vim.cmd.filetype("plugin indent on")
 
 vim.opt.clipboard = "unnamedplus"
@@ -252,7 +251,6 @@ require("lazy").setup({
 
 vim.opt.runtimepath:prepend(config_dir)
 vim.opt.runtimepath:append(config_dir .. "/after")
-require("telescope").load_extension("fzf")
 
 -- =====================
 -- Tree-sitter
