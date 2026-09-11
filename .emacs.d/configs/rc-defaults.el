@@ -23,7 +23,7 @@
 
 ;; A GUI Emacs inherits none of the shell's PATH, and a launchd daemon gets an
 ;; even barer environment while reporting `window-system' as nil.
-(when (or (daemonp) (memq window-system '(mac ns x)))
+(when (or (daemonp) (memq window-system '(mac ns x pgtk)))
   ;; Interactive, not just login: ~/.bashrc returns early in a non-interactive
   ;; shell and it is what sources config.bash, so "-l" alone drops its PATH.
   (setopt exec-path-from-shell-arguments '("-l" "-i"))

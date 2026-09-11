@@ -14,6 +14,15 @@
   (make-directory (file-name-directory path) t)
   (write-region contents nil path nil :silent))
 
+(ert-deftest rc-defaults-imports-wayland-shell-environment ()
+  (let ((window-system 'pgtk)
+        (imported nil))
+    (cl-letf (((symbol-function 'daemonp) (lambda () nil))
+              ((symbol-function 'exec-path-from-shell-initialize)
+               (lambda () (setq imported t))))
+      (load "rc-defaults" nil :nomessage)
+      (should imported))))
+
 (ert-deftest rc-package-lock-matches-installed-packages ()
   (should (require 'rc-packages nil t))
   (should (> (length (rc-package--dependency-closure)) 40))
@@ -110,7 +119,9 @@
 
 (ert-deftest rc-programming-clears-a-previous-project-venv ()
   (let ((root-a (make-temp-file "rc-python-transition-a" t))
-        (root-b (make-temp-file "rc-python-transition-b" t)))
+        (root-b (make-temp-file "rc-python-transition-b" t))
+        (exec-path nil)
+        (process-environment '("PATH=")))
     (unwind-protect
         (with-temp-buffer
           (make-directory (expand-file-name ".venv/bin" root-a) t)
@@ -131,6 +142,27 @@
           (should-not (local-variable-p 'python-flymake-command)))
       (delete-directory root-a t)
       (delete-directory root-b t))))
+
+(ert-deftest rc-programming-falls-back-to-global-linter ()
+  (let* ((root (make-temp-file "rc-python-global" t))
+         (bin (expand-file-name "bin" root))
+         (exec-path (list bin))
+         (process-environment (list (concat "PATH=" bin))))
+    (unwind-protect
+        (with-temp-buffer
+          (dolist (tool '("bin/flake8" ".venv/bin/ruff"))
+            (let ((path (expand-file-name tool root)))
+              (rc-test--write-file path "#!/bin/sh\nexit 0\n")
+              (set-file-modes path #o755)))
+          (setq default-directory (file-name-as-directory root))
+          (rc-programming-activate-venv)
+          (should (equal (car python-flymake-command) "ruff"))
+          (setq default-directory temporary-file-directory)
+          (rc-programming-activate-venv)
+          (should-not (getenv "VIRTUAL_ENV"))
+          (should (equal exec-path (list bin)))
+          (should (equal (car python-flymake-command) "flake8")))
+      (delete-directory root t))))
 
 (ert-deftest rc-cc-keeps-language-specific-styles-separate ()
   (skip-unless (executable-find "clang-format"))
