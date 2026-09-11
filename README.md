@@ -46,6 +46,12 @@ The platform READMEs define that boundary:
 - [macOS setup and services](macos/README.md)
 - [Linux setup](linux/README.md)
 
+Bootstrap the pinned Emacs packages before starting its daemon:
+
+```sh
+bash util/scripts/bootstrap-emacs.sh
+```
+
 ## What I use
 
 Emacs is my primary GUI editor. I run it as a daemon so `emacsclient` can open
@@ -91,6 +97,7 @@ These are separate from deployment:
 
 ```sh
 bash util/scripts/tags.sh [project]
+bash util/scripts/bootstrap-emacs.sh
 bash util/scripts/install-ols.sh
 bash util/scripts/install-vimplug.sh
 bash macos/scripts/install-bash.sh

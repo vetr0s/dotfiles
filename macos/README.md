@@ -46,6 +46,7 @@ Emacs is built separately with
 the daemon launcher after `/Applications/Emacs.app` exists:
 
 ```sh
+bash util/scripts/bootstrap-emacs.sh
 bash macos/scripts/make-emacsclient-app.sh
 ```
 

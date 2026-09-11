@@ -60,6 +60,28 @@ for package in make odin; do
   fi
 done
 
+if ! grep -Fq "sudo pacman -Syu --needed" \
+  "$ROOT/linux/scripts/check-packages.sh"; then
+  fail "the Arch package checker permits a partial upgrade"
+fi
+
+if grep -Eq $'^official\t(hyprpaper|swaybg)\t' "$ROOT/linux/packages.tsv" \
+  || ! grep -Fq $'official\tswaybg\t' "$ROOT/linux/packages-asahi.tsv" \
+  || ! grep -Fq $'official\thyprpaper\t' "$ROOT/linux/packages-generic.tsv"; then
+  fail "wallpaper packages are not isolated by hardware profile"
+fi
+
+if ! grep -Fq 'layout = hy3_enabled and "hy3" or "dwindle"' \
+  "$ROOT/linux/hypr/hyprland.lua" \
+  || ! grep -Fq 'hl.plugin.load(hy3_path)' "$ROOT/linux/hypr/hyprland.lua"; then
+  fail "the Hyprland config does not load hy3 with a dwindle fallback"
+fi
+
+if ! grep -Fq '42b7ed8fd9aefd3f36e5f617afd5071245c67853' \
+  "$ROOT/linux/README.md"; then
+  fail "the documented hy3 install does not use an immutable revision"
+fi
+
 if ! grep -Fq 'BUILD_ROOT="$(mktemp -d' \
   "$ROOT/macos/scripts/make-emacsclient-app.sh"; then
   fail "the Emacsclient app is not built before replacement"

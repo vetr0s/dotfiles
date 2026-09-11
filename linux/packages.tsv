@@ -22,7 +22,6 @@ official	waybar	status bar
 official	dunst	notification daemon
 official	hypridle	idle management
 official	hyprlock	screen locker
-official	hyprpaper	wallpaper daemon
 official	hyprpolkitagent	polkit authentication agent
 official	hyprshutdown	power menu
 official	xdg-desktop-portal-hyprland	screen sharing portal

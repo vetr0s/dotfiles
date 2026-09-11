@@ -10,6 +10,8 @@
 (load (expand-file-name ".emacs.d/pre-init.el" default-directory)
       nil :nomessage)
 
+(defvar rc-emacs-state-directory temporary-file-directory)
+
 (defun rc-test--write-file (path contents)
   (make-directory (file-name-directory path) t)
   (write-region contents nil path nil :silent))
@@ -23,48 +25,35 @@
       (load "rc-defaults" nil :nomessage)
       (should imported))))
 
-(ert-deftest rc-package-lock-matches-installed-packages ()
-  (should (require 'rc-packages nil t))
-  (should (> (length (rc-package--dependency-closure)) 40))
-  (should (rc-package-verify-install-candidates))
-  (rc-package-verify-lock))
+(defun rc-test--straight-lock ()
+  "Read the tracked Straight lockfile and return its repository entries."
+  (with-temp-buffer
+    (insert-file-contents
+     (expand-file-name ".emacs.d/straight-lock.el" default-directory))
+    (read (current-buffer))))
 
-(ert-deftest rc-package-lock-rejects-a-different-revision ()
-  (require 'rc-packages)
-  (let ((rc-package-lock (copy-tree rc-package-lock)))
-    (setf (caddr (assq 'vertico rc-package-lock))
-          "0000000000000000000000000000000000000000")
-    (should-error (rc-package-verify-lock))))
+(ert-deftest rc-straight-lock-pins-every-repository ()
+  (let ((lock (rc-test--straight-lock))
+        (seen nil))
+    (should (> (length lock) 40))
+    (dolist (entry lock)
+      (should (and (consp entry)
+                   (stringp (car entry))
+                   (string-match-p "\\`[0-9a-f]\\{40\\}\\'" (cdr entry))))
+      (should-not (member (car entry) seen))
+      (push (car entry) seen))))
 
-(ert-deftest rc-package-lock-rejects-a-stale-entry ()
-  (require 'rc-packages)
-  (let ((rc-package-lock
-         (cons '(not-installed "1" "0000000000000000000000000000000000000000")
-               rc-package-lock)))
-    (should-error (rc-package-verify-lock))))
+(ert-deftest rc-straight-lock-pins-bootstrap ()
+  (should (cdr (assoc "straight.el" (rc-test--straight-lock)))))
 
-(ert-deftest rc-package-lock-rejects-a-duplicate-entry ()
+(ert-deftest rc-straight-loader-requires-bootstrap-state ()
   (require 'rc-packages)
-  (let ((rc-package-lock
-         (cons (copy-tree (car rc-package-lock)) rc-package-lock)))
-    (should-error (rc-package-verify-lock))))
-
-(ert-deftest rc-package-lock-rejects-an-install-candidate ()
-  (require 'rc-packages)
-  (let* ((descriptor
-          (copy-package-desc (rc-package--installed-descriptor 'vertico)))
-         (extras (copy-tree (package-desc-extras descriptor)))
-         (package-selected-packages '(vertico))
-         (package-archive-contents `((vertico ,descriptor))))
-    (setf (alist-get :commit extras)
-          "0000000000000000000000000000000000000000")
-    (setf (package-desc-extras descriptor) extras)
-    (cl-letf (((symbol-function 'package-installed-p)
-               (lambda (&rest _) nil))
-              ((symbol-function 'package--archives-initialize) #'ignore)
-              ((symbol-function 'package-compute-transaction)
-               (lambda (packages _requirements &optional _seen) packages)))
-      (should-error (rc-package-verify-install-candidates)))))
+  (let ((rc-straight-bootstrap-file
+         (make-temp-name (expand-file-name "missing-straight-" temporary-file-directory)))
+        (rc-straight-lock-file
+         (expand-file-name ".emacs.d/straight-lock.el" default-directory)))
+    (should-error (rc-straight-load-packages)
+                  :type 'error)))
 
 (ert-deftest rc-programming-allows-python-without-a-venv ()
   (let ((root (make-temp-file "rc-python-no-venv" t)))

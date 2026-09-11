@@ -1,122 +1,36 @@
-;;; rc-packages.el --- Package revision lock -*- lexical-binding: t; -*-
+;;; rc-packages.el --- Reproducible Straight package loading -*- lexical-binding: t; -*-
 
 ;;; Commentary:
 
-;; Verifies the exact package versions and source revisions used by this
-;; configuration. Only revisions matching this lock are accepted.
+;; Package installation and network access belong to bootstrap-emacs.sh.
+;; Ordinary startup runs Straight in safe mode and only activates the package
+;; checkouts and builds already present under rc-emacs-state-directory.
 
 ;;; Code:
 
-(require 'package)
+(defconst rc-straight-bootstrap-file
+  (expand-file-name "straight/repos/straight.el/bootstrap.el"
+                    rc-emacs-state-directory)
+  "Bootstrap file installed by bootstrap-emacs.sh.")
 
-(defvar rc-package-lock nil
-  "Exact versions and source revisions for the package dependency closure.")
+(defconst rc-straight-lock-file
+  (expand-file-name "../straight-lock.el"
+                    (file-name-directory (or load-file-name buffer-file-name)))
+  "Tracked Straight version lockfile.")
 
-(defconst rc-package-lock-file
-  (expand-file-name
-   "../package-lock.el"
-   (file-name-directory (or load-file-name buffer-file-name)))
-  "File holding `rc-package-lock'.")
-
-(load rc-package-lock-file nil :nomessage)
-
-(defun rc-package--installed-descriptor (package)
-  "Return the installed descriptor for PACKAGE, or nil."
-  (cadr (assq package package-alist)))
-
-(defun rc-package--dependency-closure ()
-  "Return installed packages reachable from `package-selected-packages'."
-  (let ((todo (copy-sequence package-selected-packages))
-        (seen nil))
-    (while todo
-      (let ((package (pop todo)))
-        (unless (memq package seen)
-          (push package seen)
-          (let ((descriptor (or (rc-package--installed-descriptor package)
-                                (error "Package is not installed: %s" package))))
-            (dolist (requirement (package-desc-reqs descriptor))
-              (unless (package-built-in-p (car requirement) (cadr requirement))
-                (push (car requirement) todo)))))))
-    (sort seen (lambda (left right)
-                 (string< (symbol-name left) (symbol-name right))))))
-
-(defun rc-package--descriptor-entry (descriptor)
-  "Return the lock entry for DESCRIPTOR."
-  (let* ((package (package-desc-name descriptor))
-         (version (package-version-join (package-desc-version descriptor)))
-         (commit (alist-get :commit (package-desc-extras descriptor))))
-    (unless (and (stringp commit)
-                 (string-match-p "\\`[0-9a-f]\\{40\\}\\'" commit))
-      (error "Package has no immutable source revision: %s" package))
-    (list package version commit)))
-
-(defun rc-package--descriptor-lock (package)
-  "Return the lock entry for installed PACKAGE."
-  (rc-package--descriptor-entry
-   (or (rc-package--installed-descriptor package)
-       (error "Package is not installed: %s" package))))
-
-(defun rc-package-verify-install-candidates ()
-  "Reject unreviewed package revisions before installing them."
-  (let ((missing (seq-filter (lambda (package)
-                               (not (package-installed-p package)))
-                             package-selected-packages)))
-    (when missing
-      (package--archives-initialize)
-      (let* ((candidates
-              (mapcar
-               (lambda (package)
-                 (or (cadr (assq package package-archive-contents))
-                     (error "Package is unavailable: %s" package)))
-               missing))
-             (transaction (package-compute-transaction candidates nil)))
-        (dolist (descriptor transaction)
-          (let* ((package (package-desc-name descriptor))
-                 (expected (or (assq package rc-package-lock)
-                               (error "Package is absent from package-lock.el: %s"
-                                      package)))
-                 (actual (rc-package--descriptor-entry descriptor)))
-            (unless (equal actual expected)
-              (error "Package candidate mismatch for %s: expected %S, found %S"
-                     package (cdr expected) (cdr actual))))))))
-  t)
-
-(defun rc-package-verify-lock ()
-  "Verify the installed dependency closure against `rc-package-lock'."
-  (let ((closure (rc-package--dependency-closure))
-        (seen nil))
-    (dolist (entry rc-package-lock)
-      (when (memq (car entry) seen)
-        (error "Package lock has a duplicate entry: %s" (car entry)))
-      (push (car entry) seen))
-    (dolist (package closure)
-      (let* ((expected (or (assq package rc-package-lock)
-                           (error "Package is absent from package-lock.el: %s"
-                                  package)))
-             (actual (rc-package--descriptor-lock package)))
-        (unless (equal actual expected)
-          (error "Package lock mismatch for %s: expected %S, found %S"
-                 package (cdr expected) (cdr actual)))))
-    (dolist (entry rc-package-lock)
-      (unless (memq (car entry) closure)
-        (error "Package lock has a stale entry: %s" (car entry)))))
-  t)
-
-(defun rc-package-write-lock ()
-  "Write the installed dependency closure to `rc-package-lock-file'."
-  (interactive)
-  (let ((lock (mapcar #'rc-package--descriptor-lock
-                      (rc-package--dependency-closure))))
-    (with-temp-file rc-package-lock-file
-      (insert ";;; package-lock.el --- Exact package revisions -*- no-byte-compile: t; lexical-binding: t; -*-\n\n")
-      (insert ";;; Code:\n\n(setq rc-package-lock\n      '(")
-      (while lock
-        (prin1 (pop lock) (current-buffer))
-        (if lock
-            (insert "\n        ")
-          (insert "))\n")))
-      (insert "\n;;; package-lock.el ends here\n"))
-    (message "Wrote %s" rc-package-lock-file)))
+(defun rc-straight-load-packages ()
+  "Load the configured packages from their pinned Straight checkouts."
+  (unless (file-exists-p rc-straight-bootstrap-file)
+    (error "Emacs packages are not installed; run util/scripts/bootstrap-emacs.sh"))
+  (unless (file-exists-p rc-straight-lock-file)
+    (error "Straight lockfile is missing: %s" rc-straight-lock-file))
+  (setq straight-base-dir rc-emacs-state-directory
+        straight-profiles `((nil . ,rc-straight-lock-file))
+        straight-check-for-modifications '(check-on-save find-when-checking)
+        straight-safe-mode (not (getenv "RC_EMACS_BOOTSTRAP")))
+  (load rc-straight-bootstrap-file nil :nomessage)
+  (dolist (package rc-straight-packages)
+    (straight-use-package package)))
 
 (provide 'rc-packages)
 ;;; rc-packages.el ends here

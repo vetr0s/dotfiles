@@ -2,10 +2,9 @@
 
 ;;; Commentary:
 
-;; init.el loads this file immediately before it calls `package-initialize',
-;; which is the last point at which `package-selected-packages' still decides
-;; what gets activated. The archives and their priorities are already set by
-;; early-init.el, upstream, in the order GNU > NonGNU > MELPA > MELPA stable.
+;; init.el loads this file before post-init.el asks Straight to make the
+;; declared packages available. Installation happens only through the separate
+;; bootstrap script; normal startup runs Straight without filesystem writes.
 ;;
 ;; Org is deliberately absent: Emacs ships a current one, and pulling a second
 ;; copy from ELPA only invites a version mismatch against the built-in that
@@ -13,7 +12,7 @@
 
 ;;; Code:
 
-(setq package-selected-packages
+(defconst rc-straight-packages
       '(;; Completion and navigation
         cape
         consult
@@ -42,10 +41,10 @@
 
         ;; Emacs Lisp
         aggressive-indent
+        (paredit :type git :host github :repo "emacsmirror/paredit")
         enhanced-evil-paredit
         helpful
         highlight-defined
-        paredit
 
         ;; Languages
         markdown-mode
@@ -61,6 +60,7 @@
         evil-ghostel
         exec-path-from-shell
         ghostel
-        magit))
+        magit)
+  "Packages loaded from Git checkouts managed by Straight.")
 
 ;;; pre-init.el ends here

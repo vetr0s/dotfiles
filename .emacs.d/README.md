@@ -2,8 +2,8 @@
 
 Emacs 31 or newer configuration built on
 [minimal-emacs.d](https://github.com/jamescherti/minimal-emacs.d) v1.5.1. It
-uses the built-in `package.el`. It has no third-party package manager and no
-`use-package`.
+uses Straight to fetch packages from Git and pin their complete revision
+closure. It does not use `use-package`.
 
 ## Layout
 
@@ -20,9 +20,9 @@ files, and session data live there. Native compilation output lives under
 | File | Role |
 |------|------|
 | `pre-early-init.el` | Separates runtime state, sets `load-path`, and reports startup time |
-| `pre-init.el` | The package manifest, read before `package-initialize` |
-| `package-lock.el` | Exact package versions and source revisions |
-| `post-init.el` | Installs and verifies packages, then loads the modules |
+| `pre-init.el` | The Straight package manifest |
+| `straight-lock.el` | Exact source revisions, including recipe repositories |
+| `post-init.el` | Activates bootstrapped packages, then loads the modules |
 | `configs/rc-*.el` | The actual configuration, one file per concern |
 
 Modules are ordinary Elisp with `provide`/`require`. `rc-defaults` comes first
@@ -46,29 +46,39 @@ because it repairs `PATH`, which everything shelling out depends on.
 
 ## Packages
 
-`pre-init.el` declares the package manifest. `package-lock.el` records the
-exact installed version and upstream commit for its full dependency closure.
-Startup stops before loading the modules when an installed package differs
-from that lock.
+`pre-init.el` declares the package manifest. `straight-lock.el` records the
+exact Git revision for its dependency closure, Straight itself, and the recipe
+repositories. The lock can therefore reconstruct a package after an ELPA or
+MELPA archive has moved on to a newer build.
 
-Packages come from GNU ELPA, NonGNU ELPA, MELPA, and MELPA Stable. Nothing is
-pulled directly from a repository. `package.el` installs missing packages.
-The lock checks every candidate before installation. A changed archive build
-fails without replacing installed packages. Archives do not retain every old
-build. The lock detects a missing revision but cannot fetch one that its
-archive no longer serves.
+Install or restore the package state before starting the Emacs daemon:
+
+```sh
+bash util/scripts/bootstrap-emacs.sh
+```
+
+The bootstrap script pins Straight before loading it, checks out the tracked
+revisions, and rebuilds the packages under `$XDG_DATA_HOME/emacs/straight/`, or
+`~/.local/share/emacs/straight/` when that variable is unset. The bootstrap
+command is the supported workflow for cloning, checking out, and building
+packages. Ordinary Emacs startup enables Straight's safe mode and fails with
+the bootstrap command when package state is absent.
 
 Org is deliberately **not** in the manifest: Emacs ships a current one, and a
 second copy from ELPA races the built-in for load order.
 
-Update packages from a running Emacs. Write the new lock before restarting:
+Update packages in an explicitly bootstrapping Emacs, then write and review the
+new lock before restarting the daemon:
 
 ```
-M-x package-upgrade-all
-M-x rc-package-write-lock
+RC_EMACS_BOOTSTRAP=1 emacs --init-directory ~/.emacs.d
+M-x straight-pull-all
+M-x straight-freeze-versions
 ```
 
-Review `package-lock.el` with the configuration change that needs the update.
+Exit that Emacs, run `bash util/scripts/bootstrap-emacs.sh` to verify and rebuild
+the frozen revisions, then restart the daemon. Review `straight-lock.el` and run
+`tests/run.sh` with the package change.
 
 ## Odin
 

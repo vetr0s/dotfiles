@@ -23,7 +23,8 @@
 
 (make-directory rc-emacs-state-directory t)
 (setq user-emacs-directory rc-emacs-state-directory
-      package-user-dir (expand-file-name "elpa" rc-emacs-state-directory))
+      package-user-dir (expand-file-name "elpa" rc-emacs-state-directory)
+      minimal-emacs-package-initialize-and-refresh nil)
 
 (when (fboundp 'startup-redirect-eln-cache)
   (startup-redirect-eln-cache
@@ -41,7 +42,9 @@
     (goto-char (point-min))
     (insert (format ";; Startup Time: %.2fs\n;; Packages: %d\n\n"
                     (float-time (time-subtract after-init-time before-init-time))
-                    (length package-activated-list)))))
+                    (if (boundp 'rc-straight-packages)
+                        (length rc-straight-packages)
+                      (length package-activated-list))))))
 
 (add-hook 'emacs-startup-hook #'rc-display-startup-time 100)
 

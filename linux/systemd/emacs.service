@@ -6,6 +6,7 @@ Type=simple
 ExecStart=emacs --fg-daemon
 ExecStop=emacsclient --eval "(kill-emacs)"
 Restart=on-failure
+SuccessExitStatus=15
 
 [Install]
 WantedBy=default.target

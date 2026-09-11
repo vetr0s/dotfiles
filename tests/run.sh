@@ -46,8 +46,6 @@ bash tests/shell/repo-tests.sh
 
 if command -v emacs >/dev/null 2>&1; then
   emacs --batch -Q \
-    --eval '(setq user-emacs-directory (file-name-as-directory (expand-file-name "emacs" (or (getenv "XDG_DATA_HOME") "~/.local/share"))) package-user-dir (expand-file-name "elpa" user-emacs-directory))' \
-    --funcall package-initialize \
     -L .emacs.d/configs \
     -l tests/emacs/editor-tests.el \
     --funcall ert-run-tests-batch-and-exit

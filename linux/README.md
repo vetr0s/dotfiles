@@ -20,7 +20,9 @@ bash linux/scripts/check-packages.sh
 The checker reports missing packages and prints the commands that would install
 them. Official packages use `pacman`. Future AUR entries use an existing `yay`
 installation. Every current package comes from an official Arch repository.
-The manifest includes Symbols Nerd Font Mono for the configured icons.
+The common manifest includes Symbols Nerd Font Mono for the configured icons.
+The checker also selects `packages-asahi.tsv` on Apple Silicon hardware and
+`packages-generic.tsv` elsewhere.
 
 ## Deploy
 
@@ -41,13 +43,38 @@ Deployment links the shared configuration and these Linux directories:
 The deployer moves each existing target to a timestamped backup. It leaves an
 existing correct link alone.
 
-The wallpaper config expects `~/Pictures/mountain.jpg`. Change the tracked path
-in `linux/hypr/hyprpaper.conf` when the workstation wallpaper changes.
+The wallpaper startup helper uses Swaybg on Apple Silicon hardware, where
+Hyprpaper 0.8.4 crashes, and Hyprpaper elsewhere. Both configurations expect
+`~/Pictures/mountain.jpg`; change the tracked paths in `linux/hypr/` when the
+workstation wallpaper changes.
+
+Bootstrap Emacs packages before enabling its daemon:
+
+```sh
+bash util/scripts/bootstrap-emacs.sh
+```
 
 ## Session
 
-Hyprland starts Waybar, Hyprpaper, Hypridle, Hyprlauncher, Dunst, the
+Hyprland starts Waybar, the hardware-selected wallpaper daemon, Hypridle,
+Hyprlauncher, Dunst, the
 NetworkManager applet, and Hyprpolkitagent.
+
+The Lua config uses hy3 when its hyprpm build is present and falls back to
+`dwindle` otherwise. Hyprland 0.56.1 is not listed in hy3's current hyprpm
+commit pins, so install the verified 0.56.0.1 plugin revision explicitly on
+machines running that release:
+
+```sh
+hyprpm add https://github.com/outfoxxed/hy3.git 42b7ed8fd9aefd3f36e5f617afd5071245c67853
+hyprpm enable hy3
+```
+
+Do not run hyprpm with `sudo`; it invokes privilege elevation itself when it
+updates `/var/cache/hyprpm`. The config loads the resulting plugin directly on
+Hyprland startup. `Super+H/J/K/L` changes focus, `Super+Ctrl+H/J/K/L` moves a
+window, `Super+G` creates or removes a split group, `Super+T` toggles tabbing,
+and `Super+U/I` raises or lowers focus through nested groups.
 
 Check the active configuration after an edit:
 
