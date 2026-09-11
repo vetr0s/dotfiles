@@ -63,9 +63,11 @@ hl.config({
     input = {
         kb_layout = "us",
         follow_mouse = 1,
+        kb_options = "ctrl:nocaps",
         sensitivity = 0,
         touchpad = {
-            natural_scroll = false,
+            natural_scroll = true,
+            scroll_factor = 0.08,
         },
     },
     misc = {
