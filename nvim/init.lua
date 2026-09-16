@@ -260,7 +260,21 @@ vim.opt.runtimepath:append(config_dir .. "/after")
 --
 -- Highlighting is per buffer, so a language absent here keeps the regex syntax
 -- it already had rather than losing highlighting altogether.
-local ts_filetypes = { "c", "cpp", "go", "lua", "odin", "python", "zig" }
+local ts_filetypes = {
+  "c",
+  "cpp",
+  "css",
+  "go",
+  "html",
+  "javascript",
+  "json",
+  "lua",
+  "odin",
+  "python",
+  "svelte",
+  "typescript",
+  "zig",
+}
 
 require("nvim-treesitter").install(ts_filetypes):wait(300000)
 

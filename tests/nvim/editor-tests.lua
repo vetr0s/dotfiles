@@ -26,6 +26,38 @@ local ok, err = xpcall(function()
     "Neovim after directory appears more than once on runtimepath:\n" .. runtimepaths
   )
 
+  local svelte_path = root .. "/App.svelte"
+  vim.fn.mkdir(root, "p")
+  vim.fn.writefile({
+    '<script lang="ts">',
+    "  let name: string = 'world'",
+    "</script>",
+    "",
+    "<h1>Hello {name}</h1>",
+    "",
+    "<style>",
+    "  h1 { color: rebeccapurple; }",
+    "</style>",
+  }, svelte_path)
+  vim.cmd.edit(vim.fn.fnameescape(svelte_path))
+  assert(vim.bo.filetype == "svelte", "*.svelte filetype was not detected")
+  assert(
+    vim.treesitter.highlighter.active[vim.api.nvim_get_current_buf()],
+    "Tree-sitter highlighting did not start for Svelte"
+  )
+  local svelte_parser = assert(vim.treesitter.get_parser(0, "svelte"))
+  svelte_parser:parse(true)
+  local svelte_languages = {}
+  svelte_parser:for_each_tree(function(_, language_tree)
+    svelte_languages[language_tree:lang()] = true
+  end)
+  for _, language in ipairs({ "svelte", "typescript", "css" }) do
+    assert(
+      svelte_languages[language],
+      language .. " highlighting was not active inside the Svelte component"
+    )
+  end
+
   local nested = root .. "/nested;package"
   vim.fn.mkdir(root .. "/.git", "p")
   vim.fn.mkdir(nested, "p")
