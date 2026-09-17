@@ -75,11 +75,11 @@
             (todo "NEXT" ((org-agenda-overriding-header "Next")))))
           ("r" "Review"
            ((alltodo "" ((org-agenda-files
-                           (list (expand-file-name "inbox.org" org-directory)))
-                          (org-agenda-overriding-header "Inbox")))
+                          (list (expand-file-name "inbox.org" org-directory)))
+                         (org-agenda-overriding-header "Inbox")))
             (todo "WAIT" ((org-agenda-overriding-header "Waiting on")))
             (todo "ACTIVE" ((org-agenda-skip-function #'my-org-skip-unless-stalled)
-                             (org-agenda-overriding-header "Stalled projects"))))))))
+                            (org-agenda-overriding-header "Stalled projects"))))))))
 
 (defun my-use-project-tags ()
   (when-let* ((root (locate-dominating-file default-directory ".tags")))
@@ -87,3 +87,5 @@
 
 (add-hook 'prog-mode-hook #'my-use-project-tags)
 (setq tags-revert-without-query t)
+
+(load (expand-file-name "~/source/blog/publish.el") nil 'nomessage)
