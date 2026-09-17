@@ -1,0 +1,4 @@
+# repository	package	purpose
+official	swaybg	wallpaper daemon for Apple Silicon
+aur	shellcheck-bin	shell script linting on ARM
+aur	pandoc-bin	Markdown document conversion on ARM

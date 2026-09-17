@@ -1,0 +1,42 @@
+# repository	package	purpose
+official	zsh	interactive shell
+official	stow	dotfile deployment
+official	git	version control
+official	github-cli	GitHub credential helper
+official	emacs-wayland	native Wayland GUI editor and daemon
+official	tmux	remote terminal multiplexer
+official	kitty	Wayland terminal
+official	clang	clang-format and C tooling
+official	make	native package builds
+official	fzf	interactive selection
+official	ripgrep	project search
+official	fd	fast file discovery for Doom Emacs
+official	ctags	project tag indexes
+official	odin	Odin compiler and OLS build
+official	aspell	Emacs spelling
+official	aspell-en	English spelling dictionary
+official	poppler	PDF support
+official	hyprland	Wayland compositor
+official	hyprlauncher	application launcher
+official	waybar	status bar
+official	dunst	notification daemon
+official	hypridle	idle management
+official	hyprlock	screen locker
+official	hyprpolkitagent	polkit authentication agent
+official	hyprshutdown	power menu
+official	xdg-desktop-portal-hyprland	screen sharing portal
+official	xdg-desktop-portal-gtk	file picker portal
+official	pipewire	audio and video server
+official	pipewire-pulse	PulseAudio compatibility
+official	wireplumber	PipeWire session manager
+official	networkmanager	network management
+official	network-manager-applet	network tray and editor
+official	dolphin	file manager
+official	wl-clipboard	Wayland clipboard commands
+official	grim	screenshot capture
+official	slurp	screenshot region selection
+official	brightnessctl	backlight keys
+official	playerctl	media keys
+official	pavucontrol	audio mixer
+official	procps-ng	process checks used by Hypridle
+official	ttf-nerd-fonts-symbols-mono	Waybar and prompt symbols

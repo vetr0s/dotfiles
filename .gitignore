@@ -1,14 +1,6 @@
-# macOS
 .DS_Store
-
-nvim.log
-
-# Fonts are a per-machine preference, not repository contents.
-fonts/
-
-# util/scripts/tags.sh, if it is ever run here
-tags
-.tags
-
-# deploy.sh moves anything already at a target aside before linking
-*.backup.[0-9]*
+/docs/
+/macos/
+/notes/
+/tags
+/.tags

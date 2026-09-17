@@ -1,7 +1,0 @@
-# Compiled elisp
-*.elc
-*.eln
-
-# Local tool overrides
-.claude/settings.local.json
-local.el
