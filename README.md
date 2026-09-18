@@ -15,10 +15,7 @@ Starting from an Arch installation with Git:
 git clone https://github.com/vetr0s/dotfiles ~/source/repos/dotfiles
 cd ~/source/repos/dotfiles
 
-profile=generic # use asahi on Apple Silicon
-awk '$1 == "official" { print $2 }' \
-  packages/linux/packages.tsv "packages/linux/packages-$profile.tsv" \
-  | xargs sudo pacman -S --needed
+sudo pacman -Syu --needed - < packages/pkglist.txt
 
 git clone https://github.com/ohmyzsh/ohmyzsh ~/.oh-my-zsh
 git clone --recurse-submodules --depth 1 --shallow-submodules \
@@ -31,6 +28,12 @@ stow --target="$HOME" doom kitty linux scripts tmux zsh
 chsh -s /bin/zsh
 systemctl --user daemon-reload
 systemctl --user enable --now emacs.service
+```
+
+On Apple Silicon, also install the wallpaper fallback:
+
+```sh
+sudo pacman -S --needed - < packages/pkglist-asahi.txt
 ```
 
 Log out and back in after changing the shell. Ghostel downloads its native
