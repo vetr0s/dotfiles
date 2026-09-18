@@ -88,4 +88,4 @@
 (add-hook 'prog-mode-hook #'my-use-project-tags)
 (setq tags-revert-without-query t)
 
-(load (expand-file-name "~/source/blog/publish.el") nil 'nomessage)
+(load (expand-file-name "~/source/blog/publish.el") 'noerror 'nomessage)

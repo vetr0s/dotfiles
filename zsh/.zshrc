@@ -57,7 +57,7 @@ emacsctl() {
 }
 
 
-# NOTE: for some reason not having this set makes the blow configuration null
+# NOTE: for some reason not having this set makes the below configuration null
 export GROFF_NO_SGR=1
 
 # Colorized man pages

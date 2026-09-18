@@ -2,6 +2,11 @@
 
 Minimal Arch Linux dotfiles managed with GNU Stow.
 
+The repository configures Doom Emacs, Hyprland, Kitty, tmux, Zsh, and their
+supporting desktop tools. The previous macOS, Bash, Vim, Neovim, and standalone
+Emacs configuration remains available in Git history under the
+`legacy-2026-09-18` tag.
+
 ## New machine
 
 Starting from an Arch installation with Git:
@@ -14,9 +19,6 @@ profile=generic # use asahi on Apple Silicon
 awk '$1 == "official" { print $2 }' \
   packages/linux/packages.tsv "packages/linux/packages-$profile.tsv" \
   | xargs sudo pacman -S --needed
-awk '$1 == "aur" { print $2 }' \
-  packages/linux/packages.tsv "packages/linux/packages-$profile.tsv" \
-  | xargs -r yay -S --needed
 
 git clone https://github.com/ohmyzsh/ohmyzsh ~/.oh-my-zsh
 git clone --recurse-submodules --depth 1 --shallow-submodules \
@@ -32,7 +34,8 @@ systemctl --user enable --now emacs.service
 ```
 
 Log out and back in after changing the shell. Ghostel downloads its native
-module the first time `M-x ghostel` runs.
+module the first time `M-x ghostel` runs. Blog publishing integration activates
+when `~/source/blog/publish.el` exists.
 
 ## Tags
 

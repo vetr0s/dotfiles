@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 # One tag index per project, in the two formats the editors read: `tags' is the
-# vi format Neovim's <C-]> finds on its own, and `.tags' is the etags format
-# Emacs `M-.' wants. Same definitions either way, so both jump to the same
-# place. Emacs would conventionally call its file TAGS, but macOS filesystems
-# are case-insensitive and that is the same name as the vi one.
+# vi format and `.tags' is the etags format Emacs uses. Both contain the same
+# definitions.
 #
 # universal-ctags ships no Odin or Zig parser, so both are defined below. The
 # rest are its own.
@@ -12,7 +10,7 @@ set -e
 ROOT="${1:-.}"
 
 if ! command -v ctags >/dev/null 2>&1 || ! ctags --version 2>/dev/null | grep -q Universal; then
-  echo "universal-ctags is not on PATH. brew install universal-ctags" >&2
+  echo "universal-ctags is not on PATH. Install the ctags package." >&2
   exit 1
 fi
 
