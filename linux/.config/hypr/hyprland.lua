@@ -10,48 +10,6 @@ local file_manager = "dolphin"
 local launcher = "hyprlauncher"
 local main_mod = "SUPER"
 
-local hy3_path = "/var/cache/hyprpm/" .. (os.getenv("USER") or "") .. "/hy3/hy3.so"
-local hy3_file = io.open(hy3_path, "r")
-local hy3_enabled = hy3_file ~= nil
-
-if hy3_file then
-    hy3_file:close()
-    hl.plugin.load(hy3_path)
-end
-
-local function use_hy3(make_dispatcher, fallback)
-    if not hy3_enabled then
-        return fallback
-    end
-
-    return function()
-        if hl.plugin.hy3 then
-            hl.dispatch(make_dispatcher(hl.plugin.hy3))
-        end
-    end
-end
-
-local function focus_direction(direction)
-    return use_hy3(
-        function(hy3) return hy3.move_focus(direction) end,
-        hl.dsp.focus({ direction = direction })
-    )
-end
-
-local function move_direction(direction)
-    return use_hy3(
-        function(hy3) return hy3.move_window(direction) end,
-        hl.dsp.window.move({ direction = direction })
-    )
-end
-
-local function move_to_workspace(workspace)
-    return use_hy3(
-        function(hy3) return hy3.move_to_workspace(tostring(workspace)) end,
-        hl.dsp.window.move({ workspace = workspace })
-    )
-end
-
 hl.on("hyprland.start", function()
     hl.exec_cmd("waybar")
     hl.exec_cmd([[$HOME/.config/hypr/start-wallpaper.sh]])
@@ -76,7 +34,7 @@ hl.config({
         },
         resize_on_border = true,
         allow_tearing = false,
-        layout = hy3_enabled and "hy3" or "dwindle",
+        layout = "dwindle",
     },
     decoration = {
         rounding = 10,
@@ -118,36 +76,6 @@ hl.config({
     },
 })
 
-if hl.plugin.hy3 then
-    hl.config({
-        plugin = {
-            hy3 = {
-                node_collapse_policy = 2,
-                group_inset = 5,
-                tabs = {
-                    height = 24,
-                    padding = 6,
-                    radius = 8,
-                    border_width = 2,
-                    render_text = true,
-                    text_center = true,
-                    text_font = "Monospace",
-                    text_height = 9,
-                    blur = true,
-                    colors = {
-                        active = "rgba(7aa2f744)",
-                        active_border = "rgba(7dcfffee)",
-                        active_text = "rgba(c0caf5ff)",
-                        inactive = "rgba(1a1b2eaa)",
-                        inactive_border = "rgba(565f89aa)",
-                        inactive_text = "rgba(a9b1d6ff)",
-                    },
-                },
-            },
-        },
-    })
-end
-
 hl.curve("easeOutQuint", { type = "bezier", points = { { 0.23, 1 }, { 0.32, 1 } } })
 hl.curve("easeInOut", { type = "bezier", points = { { 0.65, 0.05 }, { 0.36, 1 } } })
 hl.animation({ leaf = "windows", enabled = true, speed = 4.8, bezier = "easeOutQuint" })
@@ -167,42 +95,28 @@ hl.bind(main_mod .. " + E", hl.dsp.exec_cmd(file_manager))
 hl.bind(main_mod .. " + R", hl.dsp.exec_cmd(launcher))
 hl.bind(main_mod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(main_mod .. " + P", hl.dsp.window.pseudo())
-hl.bind(main_mod .. " + G", use_hy3(
-    function(hy3) return hy3.make_group("opposite", { toggle = true }) end,
-    hl.dsp.layout("togglesplit")
-))
-hl.bind(main_mod .. " + T", use_hy3(
-    function(hy3) return hy3.change_group("toggletab") end,
-    hl.dsp.layout("togglesplit")
-))
-hl.bind(main_mod .. " + U", use_hy3(
-    function(hy3) return hy3.change_focus("raise") end,
-    hl.dsp.no_op()
-))
-hl.bind(main_mod .. " + I", use_hy3(
-    function(hy3) return hy3.change_focus("lower") end,
-    hl.dsp.no_op()
-))
+hl.bind(main_mod .. " + G", hl.dsp.layout("togglesplit"))
+hl.bind(main_mod .. " + T", hl.dsp.layout("togglesplit"))
 hl.bind(main_mod .. " + SHIFT + L", hl.dsp.exec_cmd("loginctl lock-session"))
 hl.bind(main_mod .. " + M", hl.dsp.exec_cmd("hyprshutdown"))
 
-hl.bind(main_mod .. " + H", focus_direction("left"))
-hl.bind(main_mod .. " + J", focus_direction("down"))
-hl.bind(main_mod .. " + K", focus_direction("up"))
-hl.bind(main_mod .. " + L", focus_direction("right"))
-hl.bind(main_mod .. " + left", focus_direction("left"))
-hl.bind(main_mod .. " + down", focus_direction("down"))
-hl.bind(main_mod .. " + up", focus_direction("up"))
-hl.bind(main_mod .. " + right", focus_direction("right"))
-hl.bind(main_mod .. " + CTRL + H", move_direction("left"))
-hl.bind(main_mod .. " + CTRL + J", move_direction("down"))
-hl.bind(main_mod .. " + CTRL + K", move_direction("up"))
-hl.bind(main_mod .. " + CTRL + L", move_direction("right"))
+hl.bind(main_mod .. " + H", hl.dsp.focus({ direction = "left" }))
+hl.bind(main_mod .. " + J", hl.dsp.focus({ direction = "down" }))
+hl.bind(main_mod .. " + K", hl.dsp.focus({ direction = "up" }))
+hl.bind(main_mod .. " + L", hl.dsp.focus({ direction = "right" }))
+hl.bind(main_mod .. " + left", hl.dsp.focus({ direction = "left" }))
+hl.bind(main_mod .. " + down", hl.dsp.focus({ direction = "down" }))
+hl.bind(main_mod .. " + up", hl.dsp.focus({ direction = "up" }))
+hl.bind(main_mod .. " + right", hl.dsp.focus({ direction = "right" }))
+hl.bind(main_mod .. " + CTRL + H", hl.dsp.window.move({ direction = "left" }))
+hl.bind(main_mod .. " + CTRL + J", hl.dsp.window.move({ direction = "down" }))
+hl.bind(main_mod .. " + CTRL + K", hl.dsp.window.move({ direction = "up" }))
+hl.bind(main_mod .. " + CTRL + L", hl.dsp.window.move({ direction = "right" }))
 
 for i = 1, 10 do
     local key = i % 10
     hl.bind(main_mod .. " + " .. key, hl.dsp.focus({ workspace = i }))
-    hl.bind(main_mod .. " + SHIFT + " .. key, move_to_workspace(i))
+    hl.bind(main_mod .. " + SHIFT + " .. key, hl.dsp.window.move({ workspace = i }))
 end
 
 hl.bind(main_mod .. " + S", hl.dsp.workspace.toggle_special("scratchpad"))
