@@ -2,9 +2,9 @@
 
 Minimal Arch Linux dotfiles managed with GNU Stow.
 
-The repository configures Doom Emacs, Hyprland, Kitty, tmux, Zsh, and their
-supporting desktop tools. The previous macOS, Bash, Vim, Neovim, and standalone
-Emacs configuration remains available in Git history under the
+The repository configures Doom Emacs, Hyprland, Kitty, tmux, Vim, Zsh, and
+their supporting desktop tools. The previous macOS, Bash, Neovim, and
+standalone Emacs configuration remains available in Git history under the
 `legacy-2026-09-18` tag.
 
 ## Why
@@ -17,6 +17,11 @@ MacBook, maintaining a separate macOS setup no longer makes sense.
 GNU Stow replaces the custom Bash deployment scripts, while Doom Emacs replaces
 the hand-built Emacs configuration. Both already do what I need with a small
 amount of configuration, leaving much less for me to own.
+
+## Editors
+
+Doom Emacs is my primary editor for most work on this machine. Vim is the
+small, dependable fallback for terminal edits, both locally and over SSH.
 
 ## New machine
 
@@ -32,7 +37,7 @@ git clone https://github.com/ohmyzsh/ohmyzsh ~/.oh-my-zsh
 git clone --recurse-submodules --depth 1 --shallow-submodules \
   https://github.com/doomemacs/core ~/.config/emacs
 
-stow --target="$HOME" doom kitty linux scripts tmux zsh
+stow --target="$HOME" doom kitty linux scripts tmux vim zsh
 ~/.config/emacs/bin/doom sync --env
 ~/.config/emacs/bin/doom doctor
 

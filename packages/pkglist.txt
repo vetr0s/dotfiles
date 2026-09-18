@@ -48,6 +48,7 @@ ttc-iosevka
 ttf-nerd-fonts-symbols-mono
 unzip
 uv
+vim
 waybar
 wget
 which
