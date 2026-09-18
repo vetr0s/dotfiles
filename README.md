@@ -51,6 +51,35 @@ Log out and back in after changing the shell. Ghostel downloads its native
 module the first time `M-x ghostel` runs. Blog publishing integration activates
 when `~/source/blog/publish.el` exists.
 
+## Packages
+
+`packages/pkglist.txt` is a curated list, not a snapshot of everything
+installed. Keep packages that belong on a fresh workstation; leave out
+dependencies, installer and hardware support, temporary diagnostics, and
+applications no longer in use.
+
+Review explicitly installed repository packages that are not already listed:
+
+```sh
+comm -23 \
+  <(pacman -Qqen | sort) \
+  <(sort packages/pkglist.txt) \
+  | fzf --multi \
+      --header='Tab selects; Enter finishes' \
+      --preview='pacman -Qi {}' \
+      --preview-window='right,60%,wrap' \
+  > /tmp/pkglist-additions.txt
+```
+
+Edit the selection, apply it, and inspect the result:
+
+```sh
+cat /tmp/pkglist-additions.txt >> packages/pkglist.txt
+sort -uo packages/pkglist.txt packages/pkglist.txt
+rm /tmp/pkglist-additions.txt
+git diff -- packages/pkglist.txt
+```
+
 ## Tags
 
 `tags [project]` creates vi and Emacs tag indexes for C, C++, Go, Python, Odin,
