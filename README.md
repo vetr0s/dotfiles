@@ -7,6 +7,17 @@ supporting desktop tools. The previous macOS, Bash, Vim, Neovim, and standalone
 Emacs configuration remains available in Git history under the
 `legacy-2026-09-18` tag.
 
+## Why
+
+This revision leans further into simplicity: fewer platforms, fewer custom
+scripts, and less configuration to maintain. Arch Linux now runs on my
+MacBook, and because that machine is temporary and I do not plan to buy another
+MacBook, maintaining a separate macOS setup no longer makes sense.
+
+GNU Stow replaces the custom Bash deployment scripts, while Doom Emacs replaces
+the hand-built Emacs configuration. Both already do what I need with a small
+amount of configuration, leaving much less for me to own.
+
 ## New machine
 
 Starting from an Arch installation with Git:
