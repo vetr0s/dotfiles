@@ -2,7 +2,7 @@
 
 (setq user-full-name "Nathan Tebbs"
       user-mail-address "nate@vetr0s.dev"
-      doom-font (font-spec :family "Zenbones Brainy" :size 17)
+      doom-font (font-spec :family "Iosevka Term" :size 17)
       doom-theme 'doom-tokyo-night
       org-directory "~/source/org/"
       org-hide-leading-stars t

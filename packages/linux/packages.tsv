@@ -40,3 +40,4 @@ official	playerctl	media keys
 official	pavucontrol	audio mixer
 official	procps-ng	process checks used by Hypridle
 official	ttf-nerd-fonts-symbols-mono	Waybar and prompt symbols
+official	ttc-iosevka	terminal and editor font
