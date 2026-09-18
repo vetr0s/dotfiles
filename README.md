@@ -44,7 +44,7 @@ systemctl --user enable --now emacs.service
 On Apple Silicon, also install the wallpaper fallback:
 
 ```sh
-sudo pacman -S --needed - < packages/pkglist-asahi.txt
+sudo pacman -S --needed swaybg
 ```
 
 Log out and back in after changing the shell. Ghostel downloads its native
