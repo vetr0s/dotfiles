@@ -1,5 +1,0 @@
-# source	target	name
-linux/hypr	.config/hypr	hyprland
-linux/waybar	.config/waybar	waybar
-linux/dunst	.config/dunst	dunst
-linux/systemd/emacs.service	.config/systemd/user/emacs.service	emacs daemon

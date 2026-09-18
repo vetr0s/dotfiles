@@ -1,0 +1,4 @@
+# repository	package	purpose
+official	hyprpaper	wallpaper daemon
+official	shellcheck	shell script linting
+official	pandoc-cli	Markdown document conversion
