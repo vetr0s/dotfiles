@@ -34,10 +34,11 @@
 
        :tools
        lookup
+       (lsp +eglot)
        magit
 
        :lang
-       cc
+       (cc +lsp)
        emacs-lisp
        go
        markdown
