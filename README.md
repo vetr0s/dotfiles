@@ -2,9 +2,9 @@
 
 Minimal Arch Linux dotfiles managed with GNU Stow.
 
-The repository configures Doom Emacs, Hyprland, Kitty, tmux, Vim, Zsh, and
-their supporting desktop tools. The previous macOS, Bash, Neovim, and
-standalone Emacs configuration remains available in Git history under the
+The repository configures Bash, Doom Emacs, Hyprland, Kitty, tmux, Vim, and
+their supporting desktop tools. Previous macOS, Neovim, standalone Emacs, and
+more elaborate shell configurations remain available in Git history under the
 `legacy-2026-09-18` tag.
 
 ## Why
@@ -23,6 +23,13 @@ amount of configuration, leaving much less for me to own.
 Doom Emacs is my primary editor for most work on this machine. Vim is the
 small, dependable fallback for terminal edits, both locally and over SSH.
 
+## Shell
+
+Bash stays deliberately close to its defaults: shared history, searchable
+history, a host/path/status prompt, and a few aliases. It has no framework or
+prompt package and remains useful on a workstation, over SSH, and in recovery
+environments.
+
 ## New machine
 
 Starting from an Arch installation with Git:
@@ -33,15 +40,14 @@ cd ~/source/repos/dotfiles
 
 sudo pacman -Syu --needed - < packages/pkglist.txt
 
-git clone https://github.com/ohmyzsh/ohmyzsh ~/.oh-my-zsh
 git clone --recurse-submodules --depth 1 --shallow-submodules \
   https://github.com/doomemacs/core ~/.config/emacs
 
-stow --target="$HOME" doom kitty linux scripts tmux vim zsh
+stow --target="$HOME" bash doom kitty linux scripts tmux vim
 ~/.config/emacs/bin/doom sync --env
 ~/.config/emacs/bin/doom doctor
 
-chsh -s /bin/zsh
+chsh -s /bin/bash
 systemctl --user daemon-reload
 systemctl --user enable --now emacs.service
 ```
