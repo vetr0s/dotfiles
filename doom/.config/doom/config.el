@@ -3,7 +3,7 @@
 (setq user-full-name "Nathan Tebbs"
       user-mail-address "nate@vetr0s.dev"
       doom-font (font-spec :family "Iosevka Term" :size 17)
-      doom-theme 'doom-tokyo-night
+      doom-theme 'doom-dark+
       org-directory "~/source/org/"
       org-hide-leading-stars t
       org-startup-indented t
@@ -71,7 +71,9 @@
           ("r" "Recipe" entry (file+headline "food.org" "Recipes") "* %?"))
         org-agenda-custom-commands
         '(("d" "Day"
-           ((agenda "" ((org-agenda-span 'day)))
+           ((agenda "" ((org-agenda-span 'day)
+                        ;; Override Doom's look-back offset for the daily view.
+                        (org-agenda-start-day nil)))
             (todo "NEXT" ((org-agenda-overriding-header "Next")))))
           ("r" "Review"
            ((alltodo "" ((org-agenda-files
