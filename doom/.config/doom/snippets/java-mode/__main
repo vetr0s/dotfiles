@@ -1,0 +1,12 @@
+# -*- mode: snippet -*-
+# name: Java main file template
+# --
+`(let ((package (ignore-errors (+java-current-package))))
+   (if (and package (not (string-empty-p package)))
+       (format "package %s;\n\n" package)
+     ""))`public class `(+java-current-class)` $1
+{
+    public static void main(String[] args) {
+        $0
+    }
+}

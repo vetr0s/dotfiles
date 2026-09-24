@@ -43,6 +43,9 @@ come from this machine's working setup.
 
 Doom Emacs is the primary editor; Vim is the fallback for terminals and SSH.
 Bash uses shared/searchable history, a small prompt, and a few aliases.
+Java editing uses Eclipse JDT LS with Eglot. Extract a
+[JDT LS release](https://download.eclipse.org/justj/?file=jdtls%2Fmilestones)
+into `~/.local/share/jdtls` so `~/.local/share/jdtls/bin/jdtls` exists.
 
 ## Tags
 

@@ -90,4 +90,8 @@
 (add-hook 'prog-mode-hook #'my-use-project-tags)
 (setq tags-revert-without-query t)
 
+(add-hook 'java-mode-local-vars-hook #'lsp! 'append)
+(set-eglot-client! '(java-mode java-ts-mode)
+  (list (expand-file-name "~/.local/share/jdtls/bin/jdtls")))
+
 (load (expand-file-name "~/source/blog/publish.el") 'noerror 'nomessage)
