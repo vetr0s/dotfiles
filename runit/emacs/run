@@ -1,0 +1,7 @@
+#!/bin/sh
+
+export HOME=/home/vetr0s
+export USER=vetr0s
+export XDG_RUNTIME_DIR=/run/user/$(id -u vetr0s)
+
+exec chpst -u vetr0s emacs --fg-daemon

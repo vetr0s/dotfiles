@@ -1,97 +1,50 @@
 # dotfiles
 
-Minimal Arch Linux dotfiles managed with GNU Stow.
-
-The repository configures Bash, Doom Emacs, Hyprland, Kitty, tmux, Vim, and
-their supporting desktop tools. Previous macOS, Neovim, standalone Emacs, and
-more elaborate shell configurations remain available in Git history under the
+Void Linux and i3 dotfiles for my main development machine, managed with GNU Stow.
+The `arch-hyprland` branch keeps the Arch Linux, Hyprland, Waybar, and systemd
+setup for my other machines. Older macOS and editor configurations are in the
 `legacy-2026-09-18` tag.
-
-## Why
-
-This revision leans further into simplicity: fewer platforms, fewer custom
-scripts, and less configuration to maintain. Arch Linux now runs on my
-MacBook, and because that machine is temporary and I do not plan to buy another
-MacBook, maintaining a separate macOS setup no longer makes sense.
-
-GNU Stow replaces the custom Bash deployment scripts, while Doom Emacs replaces
-the hand-built Emacs configuration. Both already do what I need with a small
-amount of configuration, leaving much less for me to own.
-
-## Editors
-
-Doom Emacs is my primary editor for most work on this machine. Vim is the
-small, dependable fallback for terminal edits, both locally and over SSH.
-
-## Shell
-
-Bash stays deliberately close to its defaults: shared history, searchable
-history, a host/path/status prompt, and a few aliases. It has no framework or
-prompt package and remains useful on a workstation, over SSH, and in recovery
-environments.
 
 ## New machine
 
-Starting from an Arch installation with Git:
+Starting from a Void installation with Git:
 
 ```sh
 git clone https://github.com/vetr0s/dotfiles ~/source/repos/dotfiles
 cd ~/source/repos/dotfiles
 
-sudo pacman -Syu --needed - < packages/pkglist.txt
+sudo xbps-install -Su
+xargs -r sudo xbps-install -S < packages/pkglist.txt
 
 git clone --recurse-submodules --depth 1 --shallow-submodules \
   https://github.com/doomemacs/core ~/.config/emacs
 
-stow --target="$HOME" bash doom kitty linux scripts tmux vim
+stow --target="$HOME" bash doom i3 kitty scripts tmux vim
 ~/.config/emacs/bin/doom sync --env
 ~/.config/emacs/bin/doom doctor
 
-chsh -s /bin/bash
-systemctl --user daemon-reload
-systemctl --user enable --now emacs.service
+sudo ln -s /etc/sv/dbus /var/service/
+sudo ln -s /etc/sv/NetworkManager /var/service/
+sudo ln -s /etc/sv/lightdm /var/service/
+sudo install -Dm755 runit/emacs/run /etc/sv/emacs/run
+sudo ln -s /etc/sv/emacs /var/service/
 ```
 
-On Apple Silicon, also install the wallpaper fallback:
+The Emacs service runs as `vetr0s`; change the username in `runit/emacs/run` on
+another account. Log out and back in after changing the shell with
+`chsh -s /bin/bash`. Ghostel downloads its native module on first use. Blog
+publishing loads when `~/source/blog/publish.el` exists.
 
-```sh
-sudo pacman -S --needed swaybg
-```
+`packages/pkglist.txt` is a curated workstation list, not a full inventory.
+Keep hardware drivers and one-off tools out of it. The i3 and i3status files
+come from this machine's working setup.
 
-Log out and back in after changing the shell. Ghostel downloads its native
-module the first time `M-x ghostel` runs. Blog publishing integration activates
-when `~/source/blog/publish.el` exists.
+## Editors and shell
 
-## Packages
-
-`packages/pkglist.txt` is a curated list, not a snapshot of everything
-installed. Keep packages that belong on a fresh workstation; leave out
-dependencies, installer and hardware support, temporary diagnostics, and
-applications no longer in use.
-
-Review explicitly installed repository packages that are not already listed:
-
-```sh
-comm -23 \
-  <(pacman -Qqen | sort) \
-  <(sort packages/pkglist.txt) \
-  | fzf --multi \
-      --header='Tab selects; Enter finishes' \
-      --preview='pacman -Qi {}' \
-      --preview-window='right,60%,wrap' \
-  > /tmp/pkglist-additions.txt
-```
-
-Edit the selection, apply it, and inspect the result:
-
-```sh
-cat /tmp/pkglist-additions.txt >> packages/pkglist.txt
-sort -uo packages/pkglist.txt packages/pkglist.txt
-rm /tmp/pkglist-additions.txt
-git diff -- packages/pkglist.txt
-```
+Doom Emacs is the primary editor; Vim is the fallback for terminals and SSH.
+Bash uses shared/searchable history, a small prompt, and a few aliases.
 
 ## Tags
 
-`tags [project]` creates vi and Emacs tag indexes for C, C++, Go, Python, Odin,
-and Zig.
+`tags [project]` creates vi and Emacs tag indexes for C, C++, Go, Python,
+Odin, and Zig.
