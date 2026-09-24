@@ -63,6 +63,7 @@ alias g='git'
 alias gs='git status --short --branch'
 alias gd='git diff'
 alias gl='git log --oneline --decorate --graph'
+alias csv="column -t -s ',' | less -S"
 
 if ls --color=auto /dev/null &>/dev/null; then
 	alias ls='ls --color=auto'
