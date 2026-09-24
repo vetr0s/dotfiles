@@ -10,6 +10,9 @@ _path_prepend "$HOME/.cargo/bin"
 _path_prepend "$HOME/.config/emacs/bin"
 _path_prepend "$HOME/.local/bin"
 
+export JAVA_HOME=/usr/lib/jvm/default-jdk
+_path_prepend "$JAVA_HOME/bin"
+
 if [[ -d $HOME/.bun/bin ]]; then
 	export BUN_INSTALL=$HOME/.bun
 	_path_prepend "$BUN_INSTALL/bin"
