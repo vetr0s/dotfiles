@@ -15,5 +15,6 @@ brew "tmux"
 brew "universal-ctags"
 
 cask "aerospace"
+cask "font-iosevka-term-nerd-font"
 cask "karabiner-elements"
 cask "kitty"

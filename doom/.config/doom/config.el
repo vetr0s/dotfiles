@@ -2,7 +2,7 @@
 
 (setq user-full-name "Nathan Tebbs"
       user-mail-address "nate@vetr0s.dev"
-      doom-font (font-spec :family "Iosevka Term" :size 17)
+      doom-font (font-spec :family "IosevkaTerm Nerd Font" :size 17)
       doom-theme 'doom-dark+
       org-directory "~/source/org/"
       org-hide-leading-stars t
@@ -12,6 +12,8 @@
       org-log-done 'time
       org-log-into-drawer t
       org-archive-location "archive/%s_archive::")
+
+(load-theme doom-theme t)
 
 (map! "C-c a" #'org-agenda
       "C-c c" #'org-capture
