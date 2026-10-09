@@ -1,6 +1,4 @@
 .DS_Store
-/docs/
-/macos/
-/notes/
+/.emacs.d/
 /tags
 /.tags

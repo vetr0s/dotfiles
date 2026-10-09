@@ -5,13 +5,31 @@ _path_prepend() {
 	[[ -d $dir && :$PATH: != *":$dir:"* ]] && PATH=$dir:$PATH
 }
 
+if [[ -d /opt/homebrew ]]; then
+	_dotfiles_homebrew_prefix=/opt/homebrew
+elif [[ -d /usr/local/Homebrew ]]; then
+	_dotfiles_homebrew_prefix=/usr/local
+fi
+if [[ -n ${_dotfiles_homebrew_prefix:-} ]]; then
+	_path_prepend "$_dotfiles_homebrew_prefix/sbin"
+	_path_prepend "$_dotfiles_homebrew_prefix/bin"
+	_path_prepend "$_dotfiles_homebrew_prefix/opt/universal-ctags/bin"
+fi
+
 _path_prepend "$HOME/go/bin"
 _path_prepend "$HOME/.cargo/bin"
 _path_prepend "$HOME/.config/emacs/bin"
 _path_prepend "$HOME/.local/bin"
+_path_prepend "/Applications/Emacs.app/Contents/MacOS/bin"
 
-export JAVA_HOME=/usr/lib/jvm/default-jdk
-_path_prepend "$JAVA_HOME/bin"
+if [[ -x /usr/libexec/java_home ]]; then
+	_dotfiles_java_home=$(/usr/libexec/java_home 2>/dev/null) \
+		|| _dotfiles_java_home=
+	if [[ -n $_dotfiles_java_home ]]; then
+		export JAVA_HOME=$_dotfiles_java_home
+		_path_prepend "$JAVA_HOME/bin"
+	fi
+fi
 
 if [[ -d $HOME/.bun/bin ]]; then
 	export BUN_INSTALL=$HOME/.bun
@@ -23,8 +41,12 @@ if [[ -d $HOME/.zvm ]]; then
 	_path_prepend "$ZVM_INSTALL"
 	_path_prepend "$HOME/.zvm/bin"
 fi
+unset _dotfiles_homebrew_prefix _dotfiles_java_home
 unset -f _path_prepend
 export PATH
+
+export CLICOLOR=1
+export LSCOLORS=GxFxBxdxCxDxdxabagacad
 
 if command -v emacsclient &>/dev/null; then
 	export EDITOR='emacsclient -a vi'
@@ -36,6 +58,57 @@ else
 	export EDITOR=${EDITOR:-vi}
 	export VISUAL=${VISUAL:-$EDITOR}
 fi
+
+_emacsctl_wait_ready() {
+	local attempt
+	for attempt in {1..20}; do
+		command emacsclient -e '(emacs-version)' >/dev/null 2>&1 && return
+		sleep 0.5
+	done
+	printf 'Emacs daemon failed to become ready\n' >&2
+	return 1
+}
+
+emacsctl() {
+	local label=dev.nathantebbs.emacs
+	local target="gui/$(id -u)/$label"
+
+	case ${1:-} in
+		start)
+			if ! launchctl bootstrap "gui/$(id -u)" \
+				"$HOME/Library/LaunchAgents/$label.plist" 2>/dev/null; then
+				launchctl kickstart "$target"
+			fi
+			_emacsctl_wait_ready
+			;;
+		stop)
+			launchctl bootout "$target"
+			;;
+		restart)
+			launchctl print "$target" >/dev/null 2>&1 \
+				&& launchctl bootout "$target"
+			sleep 1
+			launchctl bootstrap "gui/$(id -u)" \
+				"$HOME/Library/LaunchAgents/$label.plist"
+			_emacsctl_wait_ready
+			;;
+		status)
+			if command emacsclient -e '(emacs-version)' >/dev/null 2>&1; then
+				printf 'Emacs daemon: running\n'
+			else
+				printf 'Emacs daemon: stopped\n'
+			fi
+			;;
+		logs)
+			log show --last 1h --style compact \
+				--predicate 'process == "Emacs"'
+			;;
+		*)
+			printf 'Usage: emacsctl {start|stop|restart|status|logs}\n'
+			return 1
+			;;
+	esac
+}
 
 [[ $- == *i* ]] || return
 

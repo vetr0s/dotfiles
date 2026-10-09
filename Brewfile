@@ -1,0 +1,19 @@
+tap "nikitabobko/tap"
+
+brew "aspell"
+brew "bash"
+brew "clang-format"
+brew "fd"
+brew "fzf"
+brew "gh"
+brew "gnupg"
+brew "poppler"
+brew "ripgrep"
+brew "stow"
+brew "tmux"
+# The tags command needs this instead of the BSD ctags supplied by Xcode.
+brew "universal-ctags"
+
+cask "aerospace"
+cask "karabiner-elements"
+cask "kitty"
