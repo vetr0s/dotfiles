@@ -8,12 +8,15 @@ brew "fd"
 brew "fzf"
 brew "gh"
 brew "gnupg"
+brew "neovim"
 # Claude Code plugin hooks run under node.
 brew "node"
 brew "poppler"
 brew "ripgrep"
 brew "stow"
 brew "tmux"
+# nvim-treesitter builds parsers with it.
+brew "tree-sitter-cli"
 # The tags command needs this instead of the BSD ctags supplied by Xcode.
 brew "universal-ctags"
 brew "FelixKratz/formulae/borders"

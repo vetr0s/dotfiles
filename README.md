@@ -204,7 +204,8 @@ modifier used by AeroSpace. Kitty uses the left Option key as Meta.
 
 ## Editors and shell
 
-Doom Emacs is the primary editor. Vim is the terminal fallback. Bash uses
+Doom Emacs is the primary editor. Vim is the portable terminal fallback.
+Neovim has its own config built on its built-in plugin manager. Bash uses
 shared history, a small prompt, and a few aliases.
 
 Java editing uses Eclipse JDT LS with Eglot. Install a JDK, then extract a
