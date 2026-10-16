@@ -18,11 +18,14 @@ vim.pack.add({
   gh('stevearc/conform.nvim'),
   gh('stevearc/oil.nvim'),
   gh('echasnovski/mini.nvim'),
+  gh('Mofiqul/vscode.nvim'),
   -- Release tags ship a prebuilt fuzzy matcher, so no Rust toolchain is needed.
   { src = gh('saghen/blink.cmp'), version = vim.version.range('1.*') },
 }, { confirm = false })
 
-vim.cmd.colorscheme('minischeme')
+-- Clears the background so kitty's opacity shows through.
+require('vscode').setup({ transparent = true })
+vim.cmd.colorscheme('vscode')
 
 local map = vim.keymap.set
 
