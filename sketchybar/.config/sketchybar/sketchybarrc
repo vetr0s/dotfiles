@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+
+set -u
+
+source "$CONFIG_DIR/colors.sh"
+
+font="IosevkaTerm Nerd Font"
+
+sketchybar --bar position=top \
+                    height=32 \
+                    color="$BAR_COLOR" \
+                    border_width=1 \
+                    border_color="$BORDER_COLOR" \
+                    corner_radius=0 \
+                    display=all \
+                    sticky=on \
+                    topmost=window \
+                    padding_left=8 \
+                    padding_right=8
+
+sketchybar --default updates=when_shown \
+                    icon.font="$font:Semibold:12.0" \
+                    icon.color="$MUTED_COLOR" \
+                    label.font="$font:Medium:12.0" \
+                    label.color="$TEXT_COLOR" \
+                    background.color="$ITEM_COLOR" \
+                    background.corner_radius=5 \
+                    background.height=24 \
+                    padding_left=3 \
+                    padding_right=3 \
+                    icon.padding_left=7 \
+                    icon.padding_right=4 \
+                    label.padding_left=4 \
+                    label.padding_right=7
+
+for workspace in 1 2 3 4 5 6 7 8 9; do
+  sketchybar --add item "space.$workspace" left \
+             --set "space.$workspace" label="$workspace" \
+                                      icon.drawing=off \
+                                      label.align=center \
+                                      label.padding_left=8 \
+                                      label.padding_right=8 \
+                                      background.color="$TRANSPARENT" \
+                                      click_script="aerospace workspace $workspace"
+done
+
+sketchybar --add event aerospace_workspace_change \
+           --add event aerospace_focus_change \
+           --add item aerospace.observer left \
+           --set aerospace.observer drawing=off \
+                                    updates=on \
+                                    script="$CONFIG_DIR/plugins/workspaces.sh" \
+                                    update_freq=30 \
+           --subscribe aerospace.observer aerospace_workspace_change \
+                                          aerospace_focus_change \
+                                          front_app_switched \
+                                          display_change \
+                                          system_woke
+
+sketchybar --add item front_app left \
+           --set front_app icon.drawing=off \
+                           script="$CONFIG_DIR/plugins/front_app.sh" \
+           --subscribe front_app front_app_switched aerospace_focus_change
+
+sketchybar --add item window_title center \
+           --set window_title icon.drawing=off \
+                              updates=on \
+                              label.max_chars=48 \
+                              script="$CONFIG_DIR/plugins/window_title.sh" \
+           --subscribe window_title front_app_switched aerospace_focus_change
+
+sketchybar --add item clock right \
+           --set clock icon.drawing=off \
+                       update_freq=30 \
+                       script="$CONFIG_DIR/plugins/clock.sh" \
+           --add item battery right \
+           --set battery icon=BAT \
+                         update_freq=120 \
+                         script="$CONFIG_DIR/plugins/battery.sh" \
+           --subscribe battery power_source_change system_woke \
+           --add item network right \
+           --set network icon=NET \
+                         update_freq=30 \
+                         script="$CONFIG_DIR/plugins/network.sh" \
+           --subscribe network system_woke \
+           --add item memory right \
+           --set memory icon=MEM \
+                        update_freq=15 \
+                        script="$CONFIG_DIR/plugins/memory.sh" \
+           --add item cpu right \
+           --set cpu icon=CPU \
+                     update_freq=10 \
+                     script="$CONFIG_DIR/plugins/cpu.sh"
+
+sketchybar --hotload on
+sketchybar --update
+sketchybar --trigger aerospace_workspace_change

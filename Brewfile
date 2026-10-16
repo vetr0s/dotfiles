@@ -1,4 +1,5 @@
 tap "nikitabobko/tap"
+tap "FelixKratz/formulae"
 
 brew "aspell"
 brew "bash"
@@ -15,8 +16,12 @@ brew "stow"
 brew "tmux"
 # The tags command needs this instead of the BSD ctags supplied by Xcode.
 brew "universal-ctags"
+brew "FelixKratz/formulae/borders"
+brew "FelixKratz/formulae/sketchybar"
 
 cask "aerospace"
 cask "font-iosevka-term-nerd-font"
+cask "hammerspoon"
 cask "karabiner-elements"
 cask "kitty"
+cask "raycast"

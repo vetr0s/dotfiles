@@ -7,6 +7,25 @@
 config-version = 2
 
 start-at-login = true
+auto-reload-config = true
+
+# SketchyBar runs as a Homebrew service and may start before AeroSpace.
+# Repaint its workspaces once AeroSpace can answer queries.
+after-startup-command = [
+    'exec-and-forget sketchybar --trigger aerospace_workspace_change',
+]
+
+# Keep SketchyBar current without polling for focus changes.
+exec-on-workspace-change = ['/bin/bash', '-c',
+    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+]
+on-focus-changed = [
+    'exec-and-forget sketchybar --trigger aerospace_focus_change',
+]
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+
+# Hidden macOS applications otherwise disappear from the tiling tree.
+automatically-unhide-macos-hidden-apps = true
 
 # Version 2 dropped the inference that kept these alive: v1 read the right hand
 # side of the workspace bindings below, v2 falls back to nothing. Declared so
@@ -36,6 +55,9 @@ if.app-id = 'org.chromium.Chromium'
 run = 'move-node-to-workspace 1'
 [[on-window-detected]]
 if.app-id = 'org.mozilla.firefox'
+run = 'move-node-to-workspace 1'
+[[on-window-detected]]
+if.app-id = 'com.google.Chrome'
 run = 'move-node-to-workspace 1'
 
 # 2 Terminals
@@ -101,7 +123,8 @@ inner.horizontal = 8
 inner.vertical = 8
 outer.left = 8
 outer.bottom = 8
-outer.top = 8
+# SketchyBar is 32px tall and replaces the hidden native menu bar.
+outer.top = 40
 outer.right = 8
 
 # "mod" below means: hold the right diamond. "mod+shift" means diamond + Shift.
@@ -145,6 +168,11 @@ cmd-ctrl-alt-shift-l = 'move right'
 cmd-ctrl-alt-e = 'layout tiles horizontal vertical'
 cmd-ctrl-alt-s = 'layout accordion'
 cmd-ctrl-alt-f = 'fullscreen'
+cmd-ctrl-alt-shift-f = 'macos-native-fullscreen'
+
+# Normalization rules out i3's split, so join the focused window with a
+# neighbour instead. The neighbour's direction sets the new container.
+cmd-ctrl-alt-v = 'mode join'
 
 # Float the focused window.
 cmd-ctrl-alt-shift-space = 'layout floating tiling'
@@ -157,9 +185,19 @@ cmd-ctrl-alt-enter = 'exec-and-forget $HOME/.local/bin/kitty-float'
 # --- Resize the focused window. ---
 cmd-ctrl-alt-minus = 'resize smart -50'
 cmd-ctrl-alt-equal = 'resize smart +50'
+cmd-ctrl-alt-0 = 'balance-sizes'
+cmd-ctrl-alt-r = 'mode resize'
 
 # Switch between the two most recent workspaces.
 cmd-ctrl-alt-tab = 'workspace-back-and-forth'
+
+# Cycle monitors and carry the focused window to the next display.
+cmd-ctrl-alt-period = 'focus-monitor --wrap-around next'
+cmd-ctrl-alt-shift-period = 'move-node-to-monitor --focus-follows-window --wrap-around next'
+
+# Close the focused window, matching the i3 kill action.
+cmd-ctrl-alt-q = 'close'
+cmd-ctrl-alt-shift-c = 'reload-config'
 
 # --- Service submode for housekeeping. ---
 cmd-ctrl-alt-semicolon = 'mode service'
@@ -168,3 +206,22 @@ cmd-ctrl-alt-semicolon = 'mode service'
 esc = ['reload-config', 'mode main']
 r = ['flatten-workspace-tree', 'mode main']       # reset the split layout
 backspace = ['close-all-windows-but-current', 'mode main']
+
+[mode.join.binding]
+h = ['join-with left', 'mode main']
+j = ['join-with down', 'mode main']
+k = ['join-with up', 'mode main']
+l = ['join-with right', 'mode main']
+esc = 'mode main'
+
+[mode.resize.binding]
+h = 'resize width -50'
+j = 'resize height +50'
+k = 'resize height -50'
+l = 'resize width +50'
+left = 'resize width -50'
+down = 'resize height +50'
+up = 'resize height -50'
+right = 'resize width +50'
+enter = 'mode main'
+esc = 'mode main'

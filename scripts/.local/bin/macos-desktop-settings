@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+set -eu
+
+state_dir="$HOME/.local/state/dotfiles"
+backup_file="$state_dir/macos-desktop-settings.tsv"
+
+settings() {
+  cat <<'EOF'
+com.apple.dock|autohide|bool|true
+com.apple.dock|autohide-delay|float|0
+com.apple.dock|autohide-time-modifier|float|0.15
+com.apple.dock|launchanim|bool|false
+com.apple.dock|expose-animation-duration|float|0.1
+com.apple.dock|mru-spaces|bool|false
+com.apple.dock|expose-group-apps|bool|true
+com.apple.spaces|spans-displays|bool|true
+NSGlobalDomain|KeyRepeat|int|2
+NSGlobalDomain|InitialKeyRepeat|int|15
+NSGlobalDomain|NSAutomaticWindowAnimationsEnabled|bool|false
+NSGlobalDomain|_HIHideMenuBar|bool|true
+EOF
+}
+
+restart_ui() {
+  killall Dock 2>/dev/null || true
+  killall SystemUIServer 2>/dev/null || true
+}
+
+apply_settings() {
+  mkdir -p "$state_dir"
+  touch "$backup_file"
+
+  # Only the first apply records a key, so a rerun never backs up our own values.
+  while IFS='|' read -r domain key type value; do
+    if grep -q "^$domain"$'\t'"$key"$'\t' "$backup_file"; then
+      continue
+    fi
+    if old_value="$(defaults read "$domain" "$key" 2>/dev/null)"; then
+      printf '%s\t%s\t%s\t1\t%s\n' "$domain" "$key" "$type" "$old_value"
+    else
+      printf '%s\t%s\t%s\t0\t\n' "$domain" "$key" "$type"
+    fi
+  done < <(settings) >> "$backup_file"
+
+  while IFS='|' read -r domain key type value; do
+    defaults write "$domain" "$key" "-$type" "$value"
+  done < <(settings)
+
+  restart_ui
+  printf 'Applied macOS desktop settings. Backup: %s\n' "$backup_file"
+  printf 'Log out to apply the menu bar and Spaces settings everywhere.\n'
+}
+
+restore_settings() {
+  if [ ! -f "$backup_file" ]; then
+    printf 'No settings backup exists at %s\n' "$backup_file" >&2
+    exit 1
+  fi
+
+  while IFS=$'\t' read -r domain key type present value; do
+    if [ "$present" = 1 ]; then
+      defaults write "$domain" "$key" "-$type" "$value"
+    else
+      defaults delete "$domain" "$key" 2>/dev/null || true
+    fi
+  done < "$backup_file"
+
+  restored_file="$backup_file.restored.$(date +%Y%m%d%H%M%S)"
+  mv "$backup_file" "$restored_file"
+  restart_ui
+  printf 'Restored macOS desktop settings. Previous backup: %s\n' "$restored_file"
+}
+
+show_settings() {
+  while IFS='|' read -r domain key type value; do
+    current="$(defaults read "$domain" "$key" 2>/dev/null || printf unset)"
+    printf '%-28s %-38s %s\n' "$domain" "$key" "$current"
+  done < <(settings)
+}
+
+case "${1:-}" in
+  apply) apply_settings ;;
+  restore) restore_settings ;;
+  status) show_settings ;;
+  *)
+    printf 'Usage: %s {apply|restore|status}\n' "${0##*/}" >&2
+    exit 2
+    ;;
+esac

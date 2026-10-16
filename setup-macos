@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+set -eu
+
+repo_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+packages="aerospace bash borders doom hammerspoon karabiner kitty launchd scripts sketchybar tmux vim"
+
+usage() {
+  cat <<EOF
+Usage: ./setup-macos --dry-run | --install | --start
+
+  --dry-run  Check tools and Stow conflicts without changing the machine.
+  --install  Install Brewfile entries and link every macOS Stow package.
+  --start    Register SketchyBar and JankyBorders as login services and open
+             Hammerspoon. System settings are not changed.
+
+System preferences remain separate. Run macos-desktop-settings apply explicitly.
+EOF
+}
+
+check_host() {
+  if [ "$(uname -s)" != Darwin ]; then
+    printf 'This setup requires macOS.\n' >&2
+    exit 1
+  fi
+  if [ "$(uname -m)" != arm64 ]; then
+    printf 'Warning: this setup is tested on Apple Silicon.\n' >&2
+  fi
+}
+
+dry_run() {
+  command -v brew >/dev/null 2>&1 || { printf 'Homebrew is not installed.\n' >&2; exit 1; }
+  command -v stow >/dev/null 2>&1 || { printf 'GNU Stow is not installed.\n' >&2; exit 1; }
+  brew bundle check --verbose --no-upgrade --file "$repo_dir/Brewfile" || true
+  stow --no --verbose=1 --dir="$repo_dir" --target="$HOME" $packages
+}
+
+install() {
+  command -v brew >/dev/null 2>&1 || { printf 'Install Homebrew first.\n' >&2; exit 1; }
+  brew bundle --file "$repo_dir/Brewfile"
+  stow --no --verbose=1 --dir="$repo_dir" --target="$HOME" $packages
+  stow --verbose=1 --dir="$repo_dir" --target="$HOME" $packages
+  printf 'Installed and linked the macOS desktop files.\n'
+  printf 'Run ./setup-macos --start after granting the documented permissions.\n'
+}
+
+check_host
+
+# Homebrew services own the bar and borders so launchd restarts them and
+# AeroSpace never starts a second copy.
+start() {
+  for service in sketchybar borders; do
+    if ! brew services list | awk -v s="$service" '$1 == s && $2 == "started" { found = 1 } END { exit !found }'; then
+      brew services start "$service"
+    fi
+  done
+  open -gja Hammerspoon
+}
+
+case "${1:-}" in
+  --dry-run) dry_run ;;
+  --install) install ;;
+  --start) start ;;
+  *) usage; exit 2 ;;
+esac
