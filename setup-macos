@@ -3,7 +3,7 @@
 set -eu
 
 repo_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-packages="aerospace bash borders doom hammerspoon karabiner kitty launchd scripts sketchybar tmux vim"
+packages="aerospace bash borders doom git hammerspoon karabiner kitty launchd scripts sketchybar tmux vim"
 
 usage() {
   cat <<EOF
