@@ -7,6 +7,8 @@ brew "fd"
 brew "fzf"
 brew "gh"
 brew "gnupg"
+# Claude Code plugin hooks run under node.
+brew "node"
 brew "poppler"
 brew "ripgrep"
 brew "stow"
