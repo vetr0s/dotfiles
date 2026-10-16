@@ -5,7 +5,14 @@ set -u
 source "$CONFIG_DIR/colors.sh"
 
 focused_workspace="${FOCUSED_WORKSPACE:-}"
-if [ -z "$focused_workspace" ]; then
+if [ -n "$focused_workspace" ]; then
+  # Queries block until AeroSpace finishes the switch, so paint focus from the hook first.
+  fast=(--set "space.$focused_workspace" background.color="$ACTIVE_COLOR" label.color="$CRUST_COLOR")
+  if [ -n "${PREV_WORKSPACE:-}" ] && [ "$PREV_WORKSPACE" != "$focused_workspace" ]; then
+    fast+=(--set "space.$PREV_WORKSPACE" background.color="$ITEM_COLOR" label.color="$TEXT_COLOR")
+  fi
+  sketchybar "${fast[@]}"
+else
   focused_workspace="$(aerospace list-workspaces --focused 2>/dev/null || true)"
 fi
 

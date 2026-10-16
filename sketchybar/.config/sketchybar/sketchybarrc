@@ -53,7 +53,6 @@ sketchybar --add event aerospace_workspace_change \
                                     update_freq=30 \
            --subscribe aerospace.observer aerospace_workspace_change \
                                           aerospace_focus_change \
-                                          front_app_switched \
                                           display_change \
                                           system_woke
 
@@ -67,7 +66,7 @@ sketchybar --add item window_title center \
                               updates=on \
                               label.max_chars=48 \
                               script="$CONFIG_DIR/plugins/window_title.sh" \
-           --subscribe window_title front_app_switched aerospace_focus_change
+           --subscribe window_title aerospace_focus_change
 
 sketchybar --add item clock right \
            --set clock icon.drawing=off \

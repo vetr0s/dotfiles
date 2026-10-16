@@ -17,7 +17,7 @@ after-startup-command = [
 
 # Keep SketchyBar current without polling for focus changes.
 exec-on-workspace-change = ['/bin/bash', '-c',
-    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE'
+    'sketchybar --trigger aerospace_workspace_change FOCUSED_WORKSPACE=$AEROSPACE_FOCUSED_WORKSPACE PREV_WORKSPACE=$AEROSPACE_PREV_WORKSPACE'
 ]
 on-focus-changed = [
     'exec-and-forget sketchybar --trigger aerospace_focus_change',
