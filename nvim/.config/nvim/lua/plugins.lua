@@ -81,5 +81,6 @@ map('n', '-', '<cmd>Oil<CR>')
 
 require('mini.ai').setup()
 require('mini.surround').setup()
+require('mini.pairs').setup()
 
 require('blink.cmp').setup({})
