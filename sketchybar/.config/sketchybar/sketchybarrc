@@ -6,7 +6,7 @@ source "$CONFIG_DIR/colors.sh"
 
 font="IosevkaTerm Nerd Font"
 
-sketchybar --bar position=top \
+sketchybar --bar position=bottom \
                     height=32 \
                     color="$BAR_COLOR" \
                     border_width=1 \

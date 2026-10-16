@@ -122,9 +122,9 @@ run = 'layout floating'
 inner.horizontal = 8
 inner.vertical = 8
 outer.left = 8
-outer.bottom = 8
-# SketchyBar is 32px tall and replaces the hidden native menu bar.
-outer.top = 40
+# SketchyBar is 32px tall and sits at the bottom of the screen.
+outer.bottom = 40
+outer.top = 8
 outer.right = 8
 
 # "mod" below means: hold the right diamond. "mod+shift" means diamond + Shift.
