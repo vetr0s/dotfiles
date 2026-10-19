@@ -127,12 +127,14 @@ _prompt() {
 	history -a
 	history -n
 
-	PS1='\[\e[36m\]\u@\h\[\e[0m\]:\[\e[34m\]\w\[\e[0m\]'
-	((status)) && PS1+=" \[\e[31m\][$status]\[\e[0m\]"
-	PS1+=' \$ '
+	# The lambda turns red when the last command failed.
+	if ((status)); then
+		PS1='\[\e[31m\]λ\[\e[0m\] '
+	else
+		PS1='\[\e[34m\]λ\[\e[0m\] '
+	fi
 }
 PROMPT_COMMAND=_prompt
-PROMPT_DIRTRIM=4
 
 alias l='ls -lah'
 alias g='git'
