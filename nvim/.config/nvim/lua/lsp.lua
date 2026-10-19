@@ -21,5 +21,7 @@ vim.lsp.config('rust_analyzer', {
 vim.lsp.enable({ 'lua_ls', 'tsc', 'clangd', 'jdtls', 'rust_analyzer' })
 
 vim.api.nvim_create_autocmd('LspAttach', {
-  callback = function(ev) vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = ev.buf }) end,
+  callback = function(ev)
+    vim.keymap.set('n', 'gd', vim.lsp.buf.definition, { buffer = ev.buf, desc = 'Go to definition' })
+  end,
 })

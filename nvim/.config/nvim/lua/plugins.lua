@@ -50,21 +50,31 @@ vim.api.nvim_create_autocmd('FileType', {
 
 local fzf = require('fzf-lua')
 fzf.setup({})
-map('n', '<leader>f', fzf.files)
-map('n', '<leader>/', fzf.live_grep)
-map('n', '<leader>b', fzf.buffers)
-map('n', '<leader>s', fzf.lsp_document_symbols)
+map('n', '<leader>f', fzf.files, { desc = 'Find files' })
+map('n', '<leader>o', fzf.oldfiles, { desc = 'Recent files' })
+map('n', '<leader>b', fzf.buffers, { desc = 'Buffers' })
+map('n', '<leader>/', fzf.live_grep, { desc = 'Grep project' })
+map('n', '<leader>*', fzf.grep_cword, { desc = 'Grep word under cursor' })
+map('x', '<leader>*', fzf.grep_visual, { desc = 'Grep selection' })
+map('n', '<leader>l', fzf.blines, { desc = 'Search buffer lines' })
+map('n', '<leader>r', fzf.resume, { desc = 'Resume last picker' })
+map('n', '<leader>s', fzf.lsp_document_symbols, { desc = 'Document symbols' })
+map('n', '<leader>S', fzf.lsp_live_workspace_symbols, { desc = 'Workspace symbols' })
+map('n', '<leader>d', fzf.diagnostics_workspace, { desc = 'Diagnostics' })
+map('n', '<leader>g', fzf.git_status, { desc = 'Git status' })
+map('n', '<leader>k', fzf.keymaps, { desc = 'Keymaps' })
+map('n', '<leader>?', fzf.helptags, { desc = 'Help tags' })
 
 require('gitsigns').setup({
   on_attach = function(buf)
     local gs = require('gitsigns')
-    local function bmap(lhs, rhs) map('n', lhs, rhs, { buffer = buf }) end
-    bmap(']h', function() gs.nav_hunk('next') end)
-    bmap('[h', function() gs.nav_hunk('prev') end)
-    bmap('<leader>hs', gs.stage_hunk)
-    bmap('<leader>hr', gs.reset_hunk)
-    bmap('<leader>hp', gs.preview_hunk)
-    bmap('<leader>hb', gs.blame_line)
+    local function bmap(lhs, rhs, desc) map('n', lhs, rhs, { buffer = buf, desc = desc }) end
+    bmap(']h', function() gs.nav_hunk('next') end, 'Next hunk')
+    bmap('[h', function() gs.nav_hunk('prev') end, 'Previous hunk')
+    bmap('<leader>hs', gs.stage_hunk, 'Stage hunk')
+    bmap('<leader>hr', gs.reset_hunk, 'Reset hunk')
+    bmap('<leader>hp', gs.preview_hunk, 'Preview hunk')
+    bmap('<leader>hb', gs.blame_line, 'Blame line')
   end,
 })
 
