@@ -94,4 +94,16 @@ require('mini.ai').setup()
 require('mini.surround').setup()
 require('mini.pairs').setup()
 
+local hipatterns = require('mini.hipatterns')
+local word = function(w) return '%f[%w]()' .. w .. '()%f[%W]' end
+hipatterns.setup({
+  highlighters = {
+    fixme = { pattern = word('FIXME'), group = 'MiniHipatternsFixme' },
+    hack = { pattern = word('HACK'), group = 'MiniHipatternsHack' },
+    todo = { pattern = word('TODO'), group = 'MiniHipatternsTodo' },
+    note = { pattern = word('NOTE'), group = 'MiniHipatternsNote' },
+    hex_color = hipatterns.gen_highlighter.hex_color(),
+  },
+})
+
 require('blink.cmp').setup({})
