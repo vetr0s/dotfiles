@@ -1,0 +1,10 @@
+# Completions for builtins, from Dave Eddy's bash_completion.
+complete -A binding bind
+complete -A setopt set
+complete -A shopt shopt
+complete -A helptopic help
+complete -a alias unalias
+complete -b builtin
+complete -c type which
+complete -d cd pushd rmdir
+complete -cf man sudo
