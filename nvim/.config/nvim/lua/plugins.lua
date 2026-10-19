@@ -22,6 +22,7 @@ vim.pack.add({
   { src = gh('saghen/blink.cmp'), version = vim.version.range('1.*') },
 }, { confirm = false })
 
+require('gruber-darker').setup({ italic = { strings = false } })
 vim.cmd.colorscheme('gruber-darker')
 local p = vim.tbl_map(function(color) return color:to_string() end, require('gruber-darker.palette'))
 local function hl(group, spec) vim.api.nvim_set_hl(0, group, spec) end
