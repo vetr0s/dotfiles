@@ -87,6 +87,8 @@ require('conform').setup({
   format_on_save = { lsp_format = 'fallback' },
 })
 
+vim.cmd.packadd('nvim.undotree')
+map('n', '<leader>u', '<cmd>Undotree<CR>', { desc = 'Toggle undo tree' })
 
 require('mini.ai').setup()
 require('mini.surround').setup()
