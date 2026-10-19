@@ -42,6 +42,8 @@
        emacs-lisp
        go
        (java +lsp)
+       (javascript +lsp)
+       (lua +lsp)
        markdown
        (org +pretty)
        python

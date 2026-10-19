@@ -96,4 +96,9 @@
 (set-eglot-client! '(java-mode java-ts-mode)
   (list (expand-file-name "~/.local/share/jdtls/bin/jdtls")))
 
+;; Apheleia runs stylua in the buffer's directory, so files below the project
+;; root would miss .stylua.toml without the parent search.
+(set-formatter! 'stylua '("stylua" "--search-parent-directories" "-")
+  :modes '(lua-mode lua-ts-mode))
+
 (load (expand-file-name "~/source/blog/publish.el") 'noerror 'nomessage)
