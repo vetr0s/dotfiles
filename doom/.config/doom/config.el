@@ -3,7 +3,7 @@
 (setq user-full-name "Nathan Tebbs"
       user-mail-address "nate@vetr0s.dev"
       doom-font (font-spec :family "IosevkaTerm Nerd Font" :size 17)
-      doom-theme 'doom-dark+
+      doom-theme 'gruber-darker
       org-directory "~/source/org/"
       org-hide-leading-stars t
       org-startup-indented t

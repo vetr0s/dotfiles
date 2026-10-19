@@ -17,14 +17,25 @@ vim.pack.add({
   gh('lewis6991/gitsigns.nvim'),
   gh('stevearc/conform.nvim'),
   gh('echasnovski/mini.nvim'),
-  gh('Mofiqul/vscode.nvim'),
+  gh('blazkowolf/gruber-darker.nvim'),
   -- Release tags ship a prebuilt fuzzy matcher, so no Rust toolchain is needed.
   { src = gh('saghen/blink.cmp'), version = vim.version.range('1.*') },
 }, { confirm = false })
 
--- Clears the background so kitty's opacity shows through.
-require('vscode').setup({ transparent = true })
-vim.cmd.colorscheme('vscode')
+vim.cmd.colorscheme('gruber-darker')
+local p = vim.tbl_map(function(color) return color:to_string() end, require('gruber-darker.palette'))
+local function hl(group, spec) vim.api.nvim_set_hl(0, group, spec) end
+local function mode(group, bg) hl(group, { fg = p.bg, bg = bg, bold = true }) end
+mode('MiniStatuslineModeNormal', p.niagara)
+mode('MiniStatuslineModeInsert', p.green)
+mode('MiniStatuslineModeVisual', p.wisteria)
+mode('MiniStatuslineModeReplace', p.red)
+mode('MiniStatuslineModeCommand', p.yellow)
+mode('MiniStatuslineModeOther', p.brown)
+hl('MiniStatuslineDevinfo', { fg = p.fg, bg = p['bg+2'] })
+hl('MiniStatuslineFilename', { fg = p.fg, bg = p['bg+1'] })
+hl('MiniStatuslineFileinfo', { fg = p.fg, bg = p['bg+2'] })
+hl('MiniStatuslineInactive', { fg = p.quartz, bg = p['bg+1'] })
 
 local map = vim.keymap.set
 
