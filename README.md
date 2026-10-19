@@ -204,9 +204,10 @@ modifier used by AeroSpace. Kitty uses the left Option key as Meta.
 
 ## Editors and shell
 
-Doom Emacs is the primary editor. Vim is the portable terminal fallback.
-Neovim has its own config built on its built-in plugin manager. Bash uses
-shared history, a small prompt, and a few aliases.
+Neovim is the primary editor and the default `$EDITOR`. Its config is built
+on its built-in plugin manager. Doom Emacs is kept alongside it. Vim is the
+portable terminal fallback. Bash uses shared history, a small prompt, and a
+few aliases.
 
 Java editing uses Eclipse JDT LS in both Neovim and Doom. The Brewfile
 installs it as `jdtls`, along with the JDK it runs on.

@@ -48,15 +48,17 @@ export PATH
 export CLICOLOR=1
 export LSCOLORS=GxFxBxdxCxDxdxabagacad
 
+if command -v nvim &>/dev/null; then
+	export EDITOR=nvim
+else
+	export EDITOR=${EDITOR:-vi}
+fi
+export VISUAL=$EDITOR
+
 if command -v emacsclient &>/dev/null; then
-	export EDITOR='emacsclient -a vi'
-	export VISUAL=$EDITOR
 	alias emacs='emacsclient -c -n'
 	alias e='emacsclient -n'
 	alias et='emacsclient -t'
-else
-	export EDITOR=${EDITOR:-vi}
-	export VISUAL=${VISUAL:-$EDITOR}
 fi
 
 _emacsctl_wait_ready() {
