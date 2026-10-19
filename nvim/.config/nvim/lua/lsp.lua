@@ -7,11 +7,6 @@ vim.lsp.config('lua_ls', {
   },
 })
 
--- Same JDT LS install that Doom uses.
-vim.lsp.config('jdtls', {
-  cmd = { vim.fn.expand('~/.local/share/jdtls/bin/jdtls') },
-})
-
 vim.lsp.config('rust_analyzer', {
   settings = {
     ['rust-analyzer'] = { check = { command = 'clippy' } },

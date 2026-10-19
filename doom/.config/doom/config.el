@@ -93,8 +93,7 @@
 (setq tags-revert-without-query t)
 
 (add-hook 'java-mode-local-vars-hook #'lsp! 'append)
-(set-eglot-client! '(java-mode java-ts-mode)
-  (list (expand-file-name "~/.local/share/jdtls/bin/jdtls")))
+(set-eglot-client! '(java-mode java-ts-mode) '("jdtls"))
 
 ;; Apheleia runs stylua in the buffer's directory, so files below the project
 ;; root would miss .stylua.toml without the parent search.

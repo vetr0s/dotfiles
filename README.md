@@ -208,10 +208,8 @@ Doom Emacs is the primary editor. Vim is the portable terminal fallback.
 Neovim has its own config built on its built-in plugin manager. Bash uses
 shared history, a small prompt, and a few aliases.
 
-Java editing uses Eclipse JDT LS with Eglot. Install a JDK, then extract a
-[JDT LS release](https://download.eclipse.org/justj/?file=jdtls%2Fmilestones)
-into `~/.local/share/jdtls`. The executable must exist at
-`~/.local/share/jdtls/bin/jdtls`.
+Java editing uses Eclipse JDT LS in both Neovim and Doom. The Brewfile
+installs it as `jdtls`, along with the JDK it runs on.
 
 Ghostel downloads its native module on first use. Blog publishing loads when
 `~/source/blog/publish.el` exists.

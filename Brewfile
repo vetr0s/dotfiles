@@ -8,6 +8,8 @@ brew "fd"
 brew "fzf"
 brew "gh"
 brew "gnupg"
+# Java language server for Neovim and Doom. Pulls in openjdk.
+brew "jdtls"
 brew "neovim"
 brew "lua"
 # Language server for the Doom lua module.
