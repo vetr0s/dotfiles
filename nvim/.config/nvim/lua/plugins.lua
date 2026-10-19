@@ -16,7 +16,6 @@ vim.pack.add({
   gh('ibhagwan/fzf-lua'),
   gh('lewis6991/gitsigns.nvim'),
   gh('stevearc/conform.nvim'),
-  gh('stevearc/oil.nvim'),
   gh('echasnovski/mini.nvim'),
   gh('Mofiqul/vscode.nvim'),
   -- Release tags ship a prebuilt fuzzy matcher, so no Rust toolchain is needed.
@@ -78,8 +77,6 @@ require('conform').setup({
   format_on_save = { lsp_format = 'fallback' },
 })
 
-require('oil').setup({})
-map('n', '-', '<cmd>Oil<CR>')
 
 require('mini.ai').setup()
 require('mini.surround').setup()
