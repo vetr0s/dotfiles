@@ -4,6 +4,8 @@ o.number = true
 o.cursorline = true
 o.colorcolumn = '80'
 o.signcolumn = 'yes'
+o.laststatus = 3
+o.showmode = false
 o.scrolloff = 5
 o.sidescrolloff = 5
 

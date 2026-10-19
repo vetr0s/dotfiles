@@ -90,6 +90,8 @@ require('conform').setup({
 vim.cmd.packadd('nvim.undotree')
 map('n', '<leader>u', '<cmd>Undotree<CR>', { desc = 'Toggle undo tree' })
 
+require('mini.icons').setup()
+require('mini.statusline').setup()
 require('mini.ai').setup()
 require('mini.surround').setup()
 require('mini.pairs').setup()
