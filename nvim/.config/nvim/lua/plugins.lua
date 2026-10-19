@@ -35,6 +35,8 @@ require('nvim-treesitter').install({
   'java',
   'javascript',
   'json',
+  'rust',
+  'toml',
   'tsx',
   'typescript',
 })

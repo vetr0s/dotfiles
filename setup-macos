@@ -38,6 +38,10 @@ dry_run() {
 install() {
   command -v brew >/dev/null 2>&1 || { printf 'Install Homebrew first.\n' >&2; exit 1; }
   brew bundle --file "$repo_dir/Brewfile"
+  # Neovim's Rust LSP. The toolchain itself comes from rustup, not Homebrew.
+  if command -v rustup >/dev/null 2>&1; then
+    rustup component add rust-analyzer
+  fi
   stow --no --verbose=1 --dir="$repo_dir" --target="$HOME" $packages
   stow --verbose=1 --dir="$repo_dir" --target="$HOME" $packages
   printf 'Installed and linked the macOS desktop files.\n'
