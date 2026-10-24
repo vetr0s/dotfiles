@@ -13,12 +13,9 @@ com.apple.dock|autohide-time-modifier|float|0.15
 com.apple.dock|launchanim|bool|false
 com.apple.dock|expose-animation-duration|float|0.1
 com.apple.dock|mru-spaces|bool|false
-com.apple.dock|expose-group-apps|bool|true
-com.apple.spaces|spans-displays|bool|true
 NSGlobalDomain|KeyRepeat|int|2
 NSGlobalDomain|InitialKeyRepeat|int|15
 NSGlobalDomain|NSAutomaticWindowAnimationsEnabled|bool|false
-NSGlobalDomain|_HIHideMenuBar|bool|true
 EOF
 }
 
@@ -49,7 +46,7 @@ apply_settings() {
 
   restart_ui
   printf 'Applied macOS desktop settings. Backup: %s\n' "$backup_file"
-  printf 'Log out to apply the menu bar and Spaces settings everywhere.\n'
+  printf 'Log out to apply the Spaces settings everywhere.\n'
 }
 
 restore_settings() {

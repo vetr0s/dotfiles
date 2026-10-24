@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Generates /Applications/Emacsclient.app, a launcher that opens a GUI frame on
-# the running Emacs daemon. It exists so the daemon is reachable from Spotlight,
-# the Dock and Aerospace without a terminal.
+# the running Emacs daemon. It exists so the daemon is reachable from Spotlight
+# and the Dock without a terminal.
 #
 # "open -a Emacs" deliberately does not do this: it starts a second, independent
 # Emacs. The bundle also refuses to spawn a daemon of its own, because one

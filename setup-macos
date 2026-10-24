@@ -3,16 +3,14 @@
 set -eu
 
 repo_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
-packages="aerospace bash borders clang-format doom git hammerspoon karabiner kitty launchd nvim scripts sketchybar tmux vim"
+packages="bash clang-format doom git karabiner kitty launchd nvim scripts tmux vim"
 
 usage() {
   cat <<EOF
-Usage: ./setup-macos --dry-run | --install | --start
+Usage: ./setup-macos --dry-run | --install
 
   --dry-run  Check tools and Stow conflicts without changing the machine.
   --install  Install Brewfile entries and link every macOS Stow package.
-  --start    Register SketchyBar and JankyBorders as login services and open
-             Hammerspoon. System settings are not changed.
 
 System preferences remain separate. Run macos-desktop-settings apply explicitly.
 EOF
@@ -45,25 +43,12 @@ install() {
   stow --no --verbose=1 --dir="$repo_dir" --target="$HOME" $packages
   stow --verbose=1 --dir="$repo_dir" --target="$HOME" $packages
   printf 'Installed and linked the macOS desktop files.\n'
-  printf 'Run ./setup-macos --start after granting the documented permissions.\n'
 }
 
 check_host
 
-# Homebrew services own the bar and borders so launchd restarts them and
-# AeroSpace never starts a second copy.
-start() {
-  for service in sketchybar borders; do
-    if ! brew services list | awk -v s="$service" '$1 == s && $2 == "started" { found = 1 } END { exit !found }'; then
-      brew services start "$service"
-    fi
-  done
-  open -gja Hammerspoon
-}
-
 case "${1:-}" in
   --dry-run) dry_run ;;
   --install) install ;;
-  --start) start ;;
   *) usage; exit 2 ;;
 esac

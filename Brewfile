@@ -1,6 +1,3 @@
-tap "nikitabobko/tap"
-tap "FelixKratz/formulae"
-
 brew "aspell"
 brew "bash"
 brew "clang-format"
@@ -29,12 +26,7 @@ brew "tree-sitter-cli"
 brew "typescript-language-server"
 # The tags command needs this instead of the BSD ctags supplied by Xcode.
 brew "universal-ctags"
-brew "FelixKratz/formulae/borders"
-brew "FelixKratz/formulae/sketchybar"
 
-cask "aerospace"
 cask "font-iosevka-term-nerd-font"
-cask "hammerspoon"
 cask "karabiner-elements"
 cask "kitty"
-cask "raycast"
