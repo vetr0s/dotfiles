@@ -33,6 +33,10 @@
       "rev": "ca581c3436fc2b236847f5b739ebc263739e5ca6",
       "src": "https://github.com/nvim-treesitter/nvim-treesitter",
       "version": "'main'"
+    },
+    "swag.nvim": {
+      "rev": "1abf666222731b38abce685ed5905f4aa604605d",
+      "src": "https://github.com/vetr0s/swag.nvim"
     }
   }
 }

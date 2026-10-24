@@ -18,6 +18,7 @@ vim.pack.add({
   gh('stevearc/conform.nvim'),
   gh('echasnovski/mini.nvim'),
   gh('blazkowolf/gruber-darker.nvim'),
+  gh('vetr0s/swag.nvim'),
   -- Release tags ship a prebuilt fuzzy matcher, so no Rust toolchain is needed.
   { src = gh('saghen/blink.cmp'), version = vim.version.range('1.*') },
 }, { confirm = false })
